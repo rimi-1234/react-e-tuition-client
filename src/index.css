@@ -1,0 +1,67 @@
+/* 1. Import Fonts: Poppins/Inter (Edurock) + Urbanist (from your snippet) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* 2. Import Tailwind v4 */
+@import "tailwindcss";
+
+/* 3. Configure Tailwind Custom Variables (Bridge for your React components) */
+@theme {
+  /* Fonts */
+  --font-display: "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-urbanist: "Urbanist", sans-serif;
+
+  /* Custom Colors (needed for utility classes like 'bg-background-dark') */
+  --color-primary: #6B46F3;
+  --color-secondary: #FF3158;
+  --color-tertiary: #FFC224;
+  --color-background-light: #FFFFFF;
+  --color-background-dark: #0B0B24;
+  --color-text-light: #1F2937;
+  --color-text-dark: #F3F4F6;
+  --color-dark-card: #161638;
+}
+
+/* 4. Configure DaisyUI Plugin */
+@plugin "daisyui" {
+   themes: light --default, dark;
+};
+
+/* 5. Apply Edurock Colors to DaisyUI "Light" Theme */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #6B46F3;   /* Edurock Purple */
+  --color-secondary: #FF3158; /* Edurock Pink */
+  --color-accent: #FFC224;    /* Edurock Yellow */
+  --color-neutral: #1F2937;
+  --color-base-100: #FFFFFF;  /* background-light */
+  --color-base-200: #F3F4F6;
+  --color-base-content: #1F2937;
+}
+
+/* 6. Apply Edurock Colors to DaisyUI "Dark" Theme */
+@plugin "daisyui/theme" {
+  name: "dark";
+  --color-primary: #6B46F3;
+  --color-secondary: #FF3158;
+  --color-accent: #FFC224;
+  --color-neutral: #F3F4F6;
+  --color-base-100: #0B0B24; /* background-dark */
+  --color-base-200: #161638; /* dark-card */
+  --color-base-300: #0B0B24;
+  --color-base-content: #F3F4F6; /* text-dark */
+}
+
+/* 7. Base Styles */
+body {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins", sans-serif;
+}
