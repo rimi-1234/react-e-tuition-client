@@ -15,7 +15,7 @@ const StudentMenu = () => {
       {/* 2. My Posted Tuitions (formerly My Inventory) */}
       <MenuItem 
         icon={MdHomeWork} 
-        label='My Posts' 
+        label='My Tuitions' 
         address='my-posts' 
       />
 

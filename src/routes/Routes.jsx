@@ -10,11 +10,13 @@ import ManageUsers from '../pages/Dashboard/Admin/ManageUsers'
 import Profile from '../pages/Dashboard/Common/Profile'
 import Statistics from '../pages/Dashboard/Common/Statistics'
 import MainLayout from '../layouts/MainLayout'
-import MyInventory from '../pages/Dashboard/Student/MyInventory'
+
 import ManageOrders from '../pages/Dashboard/Student/ManageOrders'
 import MyOrders from '../pages/Dashboard/Customer/MyOrders'
 import { createBrowserRouter } from 'react-router'
 import PostTuition from '../pages/Dashboard/Student/PostTuition'
+import MyTuitions from '../pages/Dashboard/Student/MyTuitions'
+import UpdateTuition from '../pages/Dashboard/Student/UpdateTuition'
 
 export const router = createBrowserRouter([
   {
@@ -59,13 +61,17 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'my-inventory',
+        path: 'my-posts',
         element: (
           <PrivateRoute>
-            <MyInventory />
+            <MyTuitions />
           </PrivateRoute>
         ),
       },
+      {
+            path: 'update-tuition/:id', // matches the Link to={`.../${item._id}`}
+            element: <UpdateTuition />
+        },
       {
         path: 'manage-users',
         element: (
