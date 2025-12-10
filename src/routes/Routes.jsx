@@ -5,15 +5,16 @@ import SignUp from '../pages/SignUp/SignUp'
 import PlantDetails from '../pages/PlantDetails/PlantDetails'
 import PrivateRoute from './PrivateRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
-import AddPlant from '../pages/Dashboard/Seller/AddPlant'
+
 import ManageUsers from '../pages/Dashboard/Admin/ManageUsers'
 import Profile from '../pages/Dashboard/Common/Profile'
 import Statistics from '../pages/Dashboard/Common/Statistics'
 import MainLayout from '../layouts/MainLayout'
-import MyInventory from '../pages/Dashboard/Seller/MyInventory'
-import ManageOrders from '../pages/Dashboard/Seller/ManageOrders'
+import MyInventory from '../pages/Dashboard/Student/MyInventory'
+import ManageOrders from '../pages/Dashboard/Student/ManageOrders'
 import MyOrders from '../pages/Dashboard/Customer/MyOrders'
 import { createBrowserRouter } from 'react-router'
+import PostTuition from '../pages/Dashboard/Student/PostTuition'
 
 export const router = createBrowserRouter([
   {
@@ -50,10 +51,10 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'add-plant',
+       path: "post-tuition",
         element: (
           <PrivateRoute>
-            <AddPlant />
+            <PostTuition />
           </PrivateRoute>
         ),
       },
