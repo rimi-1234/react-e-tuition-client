@@ -22,6 +22,7 @@ import StudentRoute from './StudentRoute'
 import TutorRoute from './TutorRoute'
 import Tuitions from '../components/Home/Tuitions'
 import TuitionDetails from '../pages/Home/TuitionDetails'
+import Tutors from '../pages/Home/Tutors'
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: "/tuition/:id", // <--- ADD THIS ROUTE
         element: <TuitionDetails />, 
+      },
+      {
+        path: "/tutors",
+        element: <Tutors />, // The Tutors page we just made
       },
     ],
   },
