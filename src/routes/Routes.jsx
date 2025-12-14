@@ -6,17 +6,22 @@ import PlantDetails from '../pages/PlantDetails/PlantDetails'
 import PrivateRoute from './PrivateRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
 
-import ManageUsers from '../pages/Dashboard/Admin/ManageUsers'
+
 import Profile from '../pages/Dashboard/Common/Profile'
 import Statistics from '../pages/Dashboard/Common/Statistics'
 import MainLayout from '../layouts/MainLayout'
+import AdminRoute from "./AdminRoute";
 
-import ManageOrders from '../pages/Dashboard/Student/ManageOrders'
-import MyOrders from '../pages/Dashboard/Customer/MyOrders'
 import { createBrowserRouter } from 'react-router'
 import PostTuition from '../pages/Dashboard/Student/PostTuition'
 import MyTuitions from '../pages/Dashboard/Student/MyTuitions'
 import UpdateTuition from '../pages/Dashboard/Student/UpdateTuition'
+import UserManagement from '../pages/Dashboard/Admin/UserManagement'
+import TuitionManagement from '../pages/Dashboard/Admin/TuitionManagement'
+import StudentRoute from './StudentRoute'
+import TutorRoute from './TutorRoute'
+import Tuitions from '../components/Home/Tuitions'
+import TuitionDetails from '../pages/Home/TuitionDetails'
 
 export const router = createBrowserRouter([
   {
@@ -29,8 +34,12 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/plant/:id',
-        element: <PlantDetails />,
+        path: '/tuitions',
+        element: <Tuitions />,
+      },
+      {
+        path: "/tuition/:id", // <--- ADD THIS ROUTE
+        element: <TuitionDetails />, 
       },
     ],
   },
@@ -55,31 +64,59 @@ export const router = createBrowserRouter([
       {
        path: "post-tuition",
         element: (
-          <PrivateRoute>
+          <StudentRoute>
             <PostTuition />
-          </PrivateRoute>
+          </StudentRoute>
         ),
       },
       {
         path: 'my-posts',
         element: (
-          <PrivateRoute>
+          <StudentRoute>
             <MyTuitions />
-          </PrivateRoute>
+          </StudentRoute>
         ),
       },
       {
             path: 'update-tuition/:id', // matches the Link to={`.../${item._id}`}
             element: <UpdateTuition />
         },
-      {
-        path: 'manage-users',
+     {
+        path: 'admin/users',
         element: (
-          <PrivateRoute>
-            <ManageUsers />
-          </PrivateRoute>
-        ),
+          <AdminRoute><UserManagement /></AdminRoute>
+        )
       },
+      {
+        path: 'admin/tuitions',
+        element: (
+          <AdminRoute><TuitionManagement /></AdminRoute>
+        )
+      },
+      // {
+      //   path: 'tutor/job-feed', // Matches "Find Tuitions" menu
+      //   element: (
+      //     <TutorRoute>
+      //       <JobFeed />
+      //     </TutorRoute>
+      //   )
+      // },
+      // {
+      //   path: 'tutor/my-applications', // Matches "My Applications" menu
+      //   element: (
+      //     <TutorRoute>
+      //       <MyApplications />
+      //     </TutorRoute>
+      //   )
+      // },
+      // {
+      //   path: 'tutor/my-profile', // Matches "Update Profile" menu
+      //   element: (
+      //     <TutorRoute>
+      //       <TutorProfile />
+      //     </TutorRoute>
+      //   )
+      // },
       {
         path: 'profile',
         element: (
@@ -87,19 +124,8 @@ export const router = createBrowserRouter([
             <Profile />
           </PrivateRoute>
         ),
-      },
-      {
-        path: 'my-orders',
-        element: (
-          <PrivateRoute>
-            <MyOrders />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: 'manage-orders',
-        element: <ManageOrders />,
-      },
+      }
+    
     ],
   },
 ])

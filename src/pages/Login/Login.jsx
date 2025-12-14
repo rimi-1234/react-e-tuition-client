@@ -30,7 +30,8 @@ const Login = () => {
       navigate(from, { replace: true })
       toast.success('Login Successful')
     } catch (err) {
-      console.log(err)
+  
+    navigate('/login')
       toast.error(err?.message)
     }
   }

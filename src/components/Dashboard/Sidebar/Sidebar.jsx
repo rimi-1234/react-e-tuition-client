@@ -1,32 +1,38 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
-import useAuth from '../../../hooks/useAuth'
+// Adjusted paths: Go up 4 levels to reach /src/hooks
 
+
+import logo from '../../../assets/logo.png' 
 // Icons
 import { GrLogout } from 'react-icons/gr'
 import { FcSettings } from 'react-icons/fc'
 import { AiOutlineBars } from 'react-icons/ai'
 import { BsGraphUp } from 'react-icons/bs'
 
-// User Menu Components
-import MenuItem from './Menu/MenuItem'
-import StudentMenu from './Menu/StudentMenu'
-// import AdminMenu from './Menu/AdminMenu'
-// import TutorMenu from './Menu/TutorMenu'
+// User Menu Components (Adjusted paths: Go up 1 level to reach /Menu)
 
-import logo from '../../../assets/logo.png' 
+
+
+import StudentMenu from './Menu/StudentMenu'
+import TutorMenu from './Menu/TutorMenu'
+import AdminMenu from './Menu/AdminMenu'
+import useRole from '../../../hooks/useRole'
+import useAuth from '../../../hooks/useAuth'
+import MenuItem from './Menu/MenuItem'
 
 const Sidebar = () => {
   const { logOut } = useAuth()
   const [isActive, setActive] = useState(false)
+  const [role, isLoading] = useRole()
+  console.log(role);
+  
 
-  // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive)
   }
 
-  // Motion variants for sidebar
   const sidebarVariants = {
     hidden: { x: '-100%', opacity: 0 },
     visible: { x: '0%', opacity: 1 },
@@ -39,21 +45,13 @@ const Sidebar = () => {
         <div>
           <div className='block cursor-pointer p-4 font-bold'>
             <Link to='/' className='flex items-center gap-2'>
-              {/* UPDATED LOGO IMAGE & TEXT FOR MOBILE */}
-              <img 
-                src={logo} 
-                alt='Logo' 
-                className='w-8 h-8 rounded-full object-cover' 
-              />
+              <img src={logo} alt='Logo' className='w-8 h-8 rounded-full object-cover' />
               <span className='text-lg font-bold text-indigo-700 uppercase'>Edurock</span>
             </Link>
           </div>
         </div>
 
-        <button
-          onClick={handleToggle}
-          className='mobile-menu-button p-4 focus:outline-none hover:bg-indigo-50 transition'
-        >
+        <button onClick={handleToggle} className='mobile-menu-button p-4 focus:outline-none hover:bg-indigo-50 transition'>
           <AiOutlineBars className='h-5 w-5 text-indigo-600' />
         </button>
       </div>
@@ -71,47 +69,41 @@ const Sidebar = () => {
           >
             <div className='flex flex-col h-full'>
               
-              {/* Top Content: Logo */}
-              {/* UPDATED LOGO SECTION FOR DESKTOP */}
+              {/* Logo */}
               <div className='w-full hidden md:flex px-4 py-4 shadow-sm rounded-xl justify-center items-center bg-indigo-50 mx-auto mt-2'>
                 <Link to='/' className='flex items-center gap-2'>
-                  <img 
-                    src={logo} 
-                    alt='Logo' 
-                    className='w-10 h-10 rounded-full object-cover' 
-                  />
-                  <span className='text-xl font-bold text-indigo-700 uppercase tracking-wider'>
-                    TutorBoom
-                  </span>
+                  <img src={logo} alt='Logo' className='w-10 h-10 rounded-full object-cover' />
+                  <span className='text-xl font-bold text-indigo-700 uppercase tracking-wider'>TutorBoom</span>
                 </Link>
               </div>
 
-              {/* Middle Content: Menus */}
+              {/* Menus */}
               <div className='flex flex-col justify-between flex-1 mt-6'>
                 <nav>
                   <MenuItem
                     icon={BsGraphUp}
                     label='Statistics'
+                  
                     address='/dashboard'
                   />
-                  <StudentMenu />
-                  {/* <TutorMenu /> */}
-                  {/* <AdminMenu /> */}
+              
+
+                  {/* Render Menu Based on Role */}
+                  {!isLoading && (
+                    <>
+                      {role === 'Student' && <StudentMenu/>}
+                      {role === 'Tutor' && <TutorMenu />}
+                      {role === 'Admin' && <AdminMenu />}
+                    </>
+                  )}
                 </nav>
               </div>
 
-              {/* Bottom Content: Profile & Logout */}
+              {/* Footer */}
               <div>
                 <hr className='border-gray-200' />
-                <MenuItem
-                  icon={FcSettings}
-                  label='Profile'
-                  address='/dashboard/profile'
-                />
-                <button
-                  onClick={logOut}
-                  className='flex cursor-pointer w-full items-center px-4 py-2 mt-5 text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-300 transform rounded-md'
-                >
+                <MenuItem icon={FcSettings} label='Profile' address='/dashboard/profile' />
+                <button onClick={logOut} className='flex cursor-pointer w-full items-center px-4 py-2 mt-5 text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-300 transform rounded-md'>
                   <GrLogout className='w-5 h-5' />
                   <span className='mx-4 font-medium'>Logout</span>
                 </button>
