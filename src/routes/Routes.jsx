@@ -26,6 +26,7 @@ import Tutors from '../pages/Home/Tutors'
 import MyApplications from '../pages/Dashboard/Tutor/MyApplications'
 import AppliedTutors from '../pages/Dashboard/Student/AppliedTutors'
 import PaymentSuccess from '../pages/Dashboard/Student/PaymentSuccess'
+import PaymentHistory from '../pages/Dashboard/Student/PaymentHistory'
 
 export const router = createBrowserRouter([
   {
@@ -100,6 +101,14 @@ export const router = createBrowserRouter([
         element: (
             <StudentRoute>
                 <PaymentSuccess />
+            </StudentRoute>
+        )
+      },
+      {
+        path: 'payment-history',
+        element: (
+            <StudentRoute>
+                <PaymentHistory />
             </StudentRoute>
         )
       },
