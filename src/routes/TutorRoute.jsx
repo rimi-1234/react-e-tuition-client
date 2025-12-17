@@ -6,7 +6,8 @@ const TutorRoute = ({ children }) => {
   const { user, loading } = useAuth()
   const [role, roleLoading] = useRole()
   const location = useLocation()
-
+  console.log(role);
+  
   // 1. Wait for Auth and Role data to load
   if (loading || roleLoading) {
     return <div className="h-screen flex justify-center items-center"><span className="loading loading-spinner text-primary loading-lg"></span></div>

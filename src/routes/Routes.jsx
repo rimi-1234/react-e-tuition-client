@@ -23,6 +23,9 @@ import TutorRoute from './TutorRoute'
 import Tuitions from '../components/Home/Tuitions'
 import TuitionDetails from '../pages/Home/TuitionDetails'
 import Tutors from '../pages/Home/Tutors'
+import MyApplications from '../pages/Dashboard/Tutor/MyApplications'
+import AppliedTutors from '../pages/Dashboard/Student/AppliedTutors'
+import PaymentSuccess from '../pages/Dashboard/Student/PaymentSuccess'
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +49,7 @@ export const router = createBrowserRouter([
         path: "/tutors",
         element: <Tutors />, // The Tutors page we just made
       },
+  
     ],
   },
   { path: '/login', element: <Login /> },
@@ -81,6 +85,27 @@ export const router = createBrowserRouter([
             <MyTuitions />
           </StudentRoute>
         ),
+      },
+     
+      {
+        path: 'applied-tutors',
+        element: (
+            <StudentRoute>
+                <AppliedTutors />
+            </StudentRoute>
+        )
+      },
+      {
+        path: 'payment/success',
+        element: (
+            <StudentRoute>
+                <PaymentSuccess />
+            </StudentRoute>
+        )
+      },
+         {
+        path: "my-applications", // This makes the URL: /dashboard/my-applications
+        element:(<TutorRoute><MyApplications /></TutorRoute> )
       },
       {
             path: 'update-tuition/:id', // matches the Link to={`.../${item._id}`}
