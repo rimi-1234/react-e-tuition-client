@@ -29,6 +29,9 @@ import PaymentSuccess from '../pages/Dashboard/Student/PaymentSuccess'
 import PaymentHistory from '../pages/Dashboard/Student/PaymentHistory'
 import Dashboard from '../pages/Dashboard/Common/Dashboard'
 import OngoingTuitions from '../pages/Dashboard/Tutor/OngoingTuitions'
+import About from '../pages/Home/About'
+import Contact from '../pages/Home/Contact'
+
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +54,14 @@ export const router = createBrowserRouter([
       {
         path: "/tutors",
         element: <Tutors />, // The Tutors page we just made
+      },
+      {
+        path: "/about",
+        element: <About />, // The Tutors page we just made
+      },
+      {
+        path: "/contact",
+        element: <Contact />, // The Tutors page we just made
       },
 
     ],
