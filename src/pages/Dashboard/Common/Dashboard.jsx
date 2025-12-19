@@ -2,10 +2,11 @@
 
 
 import useRole from '../../../hooks/useRole';
-import AdminStatistics from '../../../components/Dashboard/Statistics/AdminStatistics';
+
 import UserHome from '../../../components/Dashboard/Statistics/UserHome';
 import LoadingSpinner from '../../../components/Shared/LoadingSpinner';
 import RevenueHistory from '../../../components/Dashboard/Statistics/RevenueHistory';
+import AdminAnalytics from '../../../components/Dashboard/Statistics/AdminAnalytics';
 
 const Dashboard = () => {
   const [role, isLoading] = useRole();
@@ -15,7 +16,7 @@ const Dashboard = () => {
   return (
     <div>
       {/* If user is Admin, show Statistics */}
-      {role === 'Admin' && <AdminStatistics />}
+      {role === 'Admin' && <AdminAnalytics />}
 
       {/* If user is a normal User/Host, show their specific Home */}
       {role === 'Tutor' && <RevenueHistory />}
