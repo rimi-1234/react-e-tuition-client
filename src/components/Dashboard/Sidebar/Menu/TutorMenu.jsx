@@ -1,15 +1,14 @@
-import { FaSearch, FaRegListAlt, FaUserEdit } from 'react-icons/fa'
+import { FaSearch, FaRegListAlt, FaUserEdit,FaChalkboardTeacher } from 'react-icons/fa'
 import MenuItem from './MenuItem'
 
 const TutorMenu = () => {
   return (
     <>
-      {/* 1. Browse Jobs (Instead of 'Add Tuition') */}
-      <MenuItem
-        icon={FaSearch}
-        label='Find Tuitions' 
-        address='job-feed'
-      />
+    <MenuItem
+  icon={FaChalkboardTeacher}
+  label='Ongoing Tuitions'
+  address='ongoing-tuitions'  // Matches path: 'ongoing-tuitions'
+/>
 
       {/* 2. Track Applications */}
       <MenuItem

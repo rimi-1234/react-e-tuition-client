@@ -28,6 +28,7 @@ import AppliedTutors from '../pages/Dashboard/Student/AppliedTutors'
 import PaymentSuccess from '../pages/Dashboard/Student/PaymentSuccess'
 import PaymentHistory from '../pages/Dashboard/Student/PaymentHistory'
 import Dashboard from '../pages/Dashboard/Common/Dashboard'
+import OngoingTuitions from '../pages/Dashboard/Tutor/OngoingTuitions'
 
 export const router = createBrowserRouter([
   {
@@ -133,14 +134,14 @@ export const router = createBrowserRouter([
           <AdminRoute><TuitionManagement /></AdminRoute>
         )
       },
-      // {
-      //   path: 'tutor/job-feed', // Matches "Find Tuitions" menu
-      //   element: (
-      //     <TutorRoute>
-      //       <JobFeed />
-      //     </TutorRoute>
-      //   )
-      // },
+      {
+        path: 'ongoing-tuitions',
+        element: (
+          <TutorRoute>
+            <OngoingTuitions />
+          </TutorRoute>
+        )
+      },
       // {
       //   path: 'tutor/my-applications', // Matches "My Applications" menu
       //   element: (
