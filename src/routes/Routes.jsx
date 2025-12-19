@@ -2,13 +2,13 @@ import Home from '../pages/Home/Home'
 import ErrorPage from '../pages/ErrorPage'
 import Login from '../pages/Login/Login'
 import SignUp from '../pages/SignUp/SignUp'
-import PlantDetails from '../pages/PlantDetails/PlantDetails'
+
 import PrivateRoute from './PrivateRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
 
 
 import Profile from '../pages/Dashboard/Common/Profile'
-import Statistics from '../pages/Dashboard/Common/Statistics'
+
 import MainLayout from '../layouts/MainLayout'
 import AdminRoute from "./AdminRoute";
 
@@ -27,6 +27,7 @@ import MyApplications from '../pages/Dashboard/Tutor/MyApplications'
 import AppliedTutors from '../pages/Dashboard/Student/AppliedTutors'
 import PaymentSuccess from '../pages/Dashboard/Student/PaymentSuccess'
 import PaymentHistory from '../pages/Dashboard/Student/PaymentHistory'
+import Dashboard from '../pages/Dashboard/Common/Dashboard'
 
 export const router = createBrowserRouter([
   {
@@ -44,13 +45,13 @@ export const router = createBrowserRouter([
       },
       {
         path: "/tuition/:id", // <--- ADD THIS ROUTE
-        element: <TuitionDetails />, 
+        element: <TuitionDetails />,
       },
       {
         path: "/tutors",
         element: <Tutors />, // The Tutors page we just made
       },
-  
+
     ],
   },
   { path: '/login', element: <Login /> },
@@ -67,12 +68,12 @@ export const router = createBrowserRouter([
         index: true,
         element: (
           <PrivateRoute>
-            <Statistics />
+            <Dashboard /> {/* Points to the new smart component */}
           </PrivateRoute>
         ),
       },
       {
-       path: "post-tuition",
+        path: "post-tuition",
         element: (
           <StudentRoute>
             <PostTuition />
@@ -87,40 +88,40 @@ export const router = createBrowserRouter([
           </StudentRoute>
         ),
       },
-     
+
       {
         path: 'applied-tutors',
         element: (
-            <StudentRoute>
-                <AppliedTutors />
-            </StudentRoute>
+          <StudentRoute>
+            <AppliedTutors />
+          </StudentRoute>
         )
       },
       {
         path: 'payment/success',
         element: (
-            <StudentRoute>
-                <PaymentSuccess />
-            </StudentRoute>
+          <StudentRoute>
+            <PaymentSuccess />
+          </StudentRoute>
         )
       },
       {
         path: 'payment-history',
         element: (
-            <StudentRoute>
-                <PaymentHistory />
-            </StudentRoute>
+          <StudentRoute>
+            <PaymentHistory />
+          </StudentRoute>
         )
       },
-         {
+      {
         path: "my-applications", // This makes the URL: /dashboard/my-applications
-        element:(<TutorRoute><MyApplications /></TutorRoute> )
+        element: (<TutorRoute><MyApplications /></TutorRoute>)
       },
       {
-            path: 'update-tuition/:id', // matches the Link to={`.../${item._id}`}
-            element: <UpdateTuition />
-        },
-     {
+        path: 'update-tuition/:id', // matches the Link to={`.../${item._id}`}
+        element: <UpdateTuition />
+      },
+      {
         path: 'admin/users',
         element: (
           <AdminRoute><UserManagement /></AdminRoute>
@@ -164,7 +165,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       }
-    
+
     ],
   },
 ])

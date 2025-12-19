@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 // Adjusted paths: Go up 4 levels to reach /src/hooks
+import { FaHome } from 'react-icons/fa';
 
-
-import logo from '../../../assets/logo.png' 
+import logo from '../../../assets/logo.png'
 // Icons
 import { GrLogout } from 'react-icons/gr'
 import { FcSettings } from 'react-icons/fc'
@@ -27,7 +27,7 @@ const Sidebar = () => {
   const [isActive, setActive] = useState(false)
   const [role, isLoading] = useRole()
   console.log(role);
-  
+
 
   const handleToggle = () => {
     setActive(!isActive)
@@ -68,7 +68,7 @@ const Sidebar = () => {
             className={`z-10 md:fixed flex flex-col justify-between overflow-x-hidden bg-white w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform md:translate-x-0 border-r border-indigo-100`}
           >
             <div className='flex flex-col h-full'>
-              
+
               {/* Logo */}
               <div className='w-full hidden md:flex px-4 py-4 shadow-sm rounded-xl justify-center items-center bg-indigo-50 mx-auto mt-2'>
                 <Link to='/' className='flex items-center gap-2'>
@@ -81,17 +81,16 @@ const Sidebar = () => {
               <div className='flex flex-col justify-between flex-1 mt-6'>
                 <nav>
                   <MenuItem
-                    icon={BsGraphUp}
-                    label='Statistics'
-                  
-                    address='/dashboard'
+                    icon={FaHome}
+                    label='Home'
+                    address='/'
                   />
-              
+
 
                   {/* Render Menu Based on Role */}
                   {!isLoading && (
                     <>
-                      {role === 'Student' && <StudentMenu/>}
+                      {role === 'Student' && <StudentMenu />}
                       {role === 'Tutor' && <TutorMenu />}
                       {role === 'Admin' && <AdminMenu />}
                     </>
