@@ -50,48 +50,7 @@ const { data: latestPosts = [], isLoading: loadingPosts } = useQuery({
             <Hero />
 
             {/* 2. How It Works (Visual Steps) */}
-            <section className="py-24 px-6 bg-base-200/50">
-                <div className="max-w-6xl mx-auto text-center">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={fadeInUp}
-                    >
-                        <h2 className="text-4xl md:text-5xl font-bold font-display mb-4">
-                            How It <span className="text-primary">Works</span>
-                        </h2>
-                        <p className="text-gray-500 max-w-2xl mx-auto mb-16">
-                            Find the perfect tutor or student in three simple steps. Our process is designed for speed and security.
-                        </p>
-                    </motion.div>
-                    
-                    <motion.div 
-                        variants={staggerContainer}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
-                    >
-                        {/* Connecting Line (Desktop Only) */}
-                        <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 -z-10 dashed-line"></div>
-
-                        {[
-                            { icon: FaSearch, title: "Post Requirement", desc: "Describe the subject, class, and days you need. It's free.", color: "text-blue-500", bg: "bg-blue-50" },
-                            { icon: FaChalkboardTeacher, title: "Get Connected", desc: "Qualified tutors apply to your post. Review profiles.", color: "text-purple-500", bg: "bg-purple-50" },
-                            { icon: FaUserCheck, title: "Hire & Learn", desc: "Select the best match and start learning securely.", color: "text-green-500", bg: "bg-green-50" }
-                        ].map((step, idx) => (
-                            <motion.div key={idx} variants={fadeInUp} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-                                <div className={`w-20 h-20 mx-auto ${step.bg} rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                                    <step.icon className={`text-3xl ${step.color}`} />
-                                </div>
-                                <h3 className="text-xl font-bold mb-3 font-display">{step.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
+           
 
             {/* 3. Latest Tuition Posts */}
             {/* The component now handles fetching and displaying the gradient cards */}
@@ -169,6 +128,48 @@ const { data: latestPosts = [], isLoading: loadingPosts } = useQuery({
                         </div>
                         {/* Decorative background blob */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/10 rounded-full blur-3xl -z-0"></div>
+                    </motion.div>
+                </div>
+            </section>
+             <section className="py-24 px-6 bg-base-200/50">
+                <div className="max-w-6xl mx-auto text-center">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                        variants={fadeInUp}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-bold font-display mb-4">
+                            How It <span className="text-primary">Works</span>
+                        </h2>
+                        <p className="text-gray-500 max-w-2xl mx-auto mb-16">
+                            Find the perfect tutor or student in three simple steps. Our process is designed for speed and security.
+                        </p>
+                    </motion.div>
+                    
+                    <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
+                    >
+                        {/* Connecting Line (Desktop Only) */}
+                        <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 -z-10 dashed-line"></div>
+
+                        {[
+                            { icon: FaSearch, title: "Post Requirement", desc: "Describe the subject, class, and days you need. It's free.", color: "text-blue-500", bg: "bg-blue-50" },
+                            { icon: FaChalkboardTeacher, title: "Get Connected", desc: "Qualified tutors apply to your post. Review profiles.", color: "text-purple-500", bg: "bg-purple-50" },
+                            { icon: FaUserCheck, title: "Hire & Learn", desc: "Select the best match and start learning securely.", color: "text-green-500", bg: "bg-green-50" }
+                        ].map((step, idx) => (
+                            <motion.div key={idx} variants={fadeInUp} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                                <div className={`w-20 h-20 mx-auto ${step.bg} rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                                    <step.icon className={`text-3xl ${step.color}`} />
+                                </div>
+                                <h3 className="text-xl font-bold mb-3 font-display">{step.title}</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 </div>
             </section>
