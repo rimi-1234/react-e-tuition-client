@@ -1,5 +1,4 @@
- // Assuming you have an Auth hook for user info
-
+import { Link } from 'react-router';
 import useAuth from "../../../hooks/useAuth";
 
 const UserHome = () => {
@@ -36,12 +35,23 @@ const UserHome = () => {
         <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
           <h3 className="text-xl font-semibold mb-4 text-gray-700">Quick Actions</h3>
           <div className="flex flex-col gap-3">
-            <button className="w-full py-2 px-4 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition">
-              View My Bookings
-            </button>
-            <button className="w-full py-2 px-4 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition">
+            
+            {/* Link 1: View My Bookings */}
+            <Link 
+                to="/tuitions" 
+                className="w-full py-2 px-4 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition block text-center"
+            >
+              View My Tutions
+            </Link>
+
+            {/* Link 2: Edit Profile */}
+            <Link 
+                to="/dashboard/profile"
+                className="w-full py-2 px-4 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition block text-center"
+            >
               Edit Profile
-            </button>
+            </Link>
+
           </div>
         </div>
       </div>

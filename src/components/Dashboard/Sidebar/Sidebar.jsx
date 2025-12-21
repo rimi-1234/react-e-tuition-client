@@ -13,7 +13,7 @@ import { BsGraphUp } from 'react-icons/bs'
 
 // User Menu Components (Adjusted paths: Go up 1 level to reach /Menu)
 
-
+import { FaTachometerAlt } from 'react-icons/fa';
 
 import StudentMenu from './Menu/StudentMenu'
 import TutorMenu from './Menu/TutorMenu'
@@ -84,6 +84,11 @@ const Sidebar = () => {
                     icon={FaHome}
                     label='Home'
                     address='/'
+                  />
+                  <MenuItem
+                    icon={FaTachometerAlt} // FontAwesome dashboard icon
+                    label='Dashboard'
+                    address='/dashboard'
                   />
 
 

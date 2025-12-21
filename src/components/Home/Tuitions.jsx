@@ -12,7 +12,7 @@ const Tuitions = () => {
   const [filterClass, setFilterClass] = useState('')
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1) // Current Page
-  const limit = 8 // Items per page
+  const limit = 6 // Items per page
 
   // --- Reset Page on Filter Change ---
   // If user searches/filters, we must jump back to Page 1
@@ -159,7 +159,7 @@ const Tuitions = () => {
              )}
 
              {/* --- PAGINATION CONTROLS --- */}
-             {total > limit && (
+             {/* {total > limit && ( */}
                 <div className="flex justify-center mt-12">
                     <div className="join shadow-sm border border-base-200">
                         <button 
@@ -193,7 +193,7 @@ const Tuitions = () => {
                         </button>
                     </div>
                 </div>
-             )}
+             {/* )} */}
           </>
         )}
       </div>

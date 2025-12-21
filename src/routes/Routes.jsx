@@ -63,6 +63,14 @@ export const router = createBrowserRouter([
         path: "/contact",
         element: <Contact />, // The Tutors page we just made
       },
+       {
+        path: '/profile',
+        element: (
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        ),
+      }
 
     ],
   },
