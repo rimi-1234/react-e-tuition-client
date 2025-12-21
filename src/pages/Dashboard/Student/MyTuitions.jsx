@@ -48,12 +48,13 @@ const MyTuitions = () => {
       }
     })
   }
-
-  if (loading) return <div className="h-screen flex justify-center items-center"><span className="loading loading-spinner text-primary loading-lg"></span></div>
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="w-full p-6 bg-base-200 min-h-screen font-body">
-      
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
@@ -108,15 +109,15 @@ const MyTuitions = () => {
                 </td>
                 <td>
                   <div className="flex justify-center gap-2">
-                    <Link 
-                      to={`/dashboard/update-tuition/${item._id}`} 
+                    <Link
+                      to={`/dashboard/update-tuition/${item._id}`}
                       className="btn btn-sm btn-square btn-ghost text-primary hover:bg-primary hover:text-white transition-colors tooltip"
                       data-tip="Edit"
                     >
                       <FaEdit />
                     </Link>
-                    <button 
-                      onClick={() => handleDelete(item._id)} 
+                    <button
+                      onClick={() => handleDelete(item._id)}
                       className="btn btn-sm btn-square btn-ghost text-red-500 hover:bg-red-500 hover:text-white transition-colors tooltip"
                       data-tip="Delete"
                     >
@@ -137,13 +138,13 @@ const MyTuitions = () => {
         {posts.map((item) => (
           <div key={item._id} className="card bg-base-100 shadow-xl border border-gray-100 group hover:border-primary/50 transition duration-300">
             <div className="card-body p-6">
-              
+
               {/* Card Top: Status & Title */}
               <div className="flex justify-between items-start mb-2">
-                 <div className="badge badge-outline badge-lg font-urbanist font-bold">{item.class}</div>
-                 <StatusBadge status={item.status} />
+                <div className="badge badge-outline badge-lg font-urbanist font-bold">{item.class}</div>
+                <StatusBadge status={item.status} />
               </div>
-              
+
               <h3 className="card-title font-display text-xl text-base-content mt-2 group-hover:text-primary transition-colors">
                 {item.subject}
               </h3>
@@ -164,18 +165,18 @@ const MyTuitions = () => {
 
               {/* Card Actions */}
               <div className="card-actions justify-end mt-4 pt-4 border-t border-gray-100">
-                 <Link 
-                    to={`/dashboard/update-tuition/${item._id}`} 
-                    className="btn btn-sm btn-outline btn-primary font-urbanist"
-                 >
-                    <FaEdit /> Edit
-                 </Link>
-                 <button 
-                    onClick={() => handleDelete(item._id)} 
-                    className="btn btn-sm btn-ghost text-error hover:bg-error/10 font-urbanist"
-                 >
-                    <FaTrash /> Delete
-                 </button>
+                <Link
+                  to={`/dashboard/update-tuition/${item._id}`}
+                  className="btn btn-sm btn-outline btn-primary font-urbanist"
+                >
+                  <FaEdit /> Edit
+                </Link>
+                <button
+                  onClick={() => handleDelete(item._id)}
+                  className="btn btn-sm btn-ghost text-error hover:bg-error/10 font-urbanist"
+                >
+                  <FaTrash /> Delete
+                </button>
               </div>
 
             </div>
@@ -186,8 +187,8 @@ const MyTuitions = () => {
       {/* Empty State */}
       {posts.length === 0 && !loading && (
         <div className="text-center py-20">
-           <h3 className="text-xl font-display text-gray-400">No tuition posts found.</h3>
-           <Link to="/dashboard/post-tuition" className="btn btn-primary mt-4 text-white font-urbanist">Post Your First Tuition</Link>
+          <h3 className="text-xl font-display text-gray-400">No tuition posts found.</h3>
+          <Link to="/dashboard/post-tuition" className="btn btn-primary mt-4 text-white font-urbanist">Post Your First Tuition</Link>
         </div>
       )}
 
@@ -202,7 +203,7 @@ const StatusBadge = ({ status }) => {
     Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
     Rejected: "bg-red-100 text-red-700 border-red-200",
   }
-  
+
   // Default to gray if status is unknown
   const activeStyle = styles[status] || "bg-gray-100 text-gray-600 border-gray-200"
 

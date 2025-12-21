@@ -3,7 +3,7 @@ import { ScaleLoader } from 'react-spinners'
 const LoadingSpinner = ({ smallHeight }) => {
   return (
     <div
-      className={` ${smallHeight ? 'h-[250px]' : 'h-[70vh]'}
+      className={` ${smallHeight ? 'h-[250px]' : 'h-screen'}
       flex 
       flex-col 
       justify-center 
