@@ -172,13 +172,13 @@ const StatusBadge = ({ status }) => {
         <span className={`badge font-bold p-3 text-white border-none
             ${status === 'Approved' ? 'bg-green-500' : ''}
             ${status === 'Rejected' ? 'bg-red-500' : ''}
+            ${status === 'Booked' ? 'bg-blue-500' : ''} 
             ${!status || status === 'pending' ? 'bg-yellow-500' : ''}
         `}>
             {status || 'Pending'}
         </span>
     )
 }
-
 // 2. Action Buttons Component (Works for both Table and Card)
 const ActionButtons = ({ item, onStatusChange, isCard }) => {
     return (
