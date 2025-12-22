@@ -4,6 +4,7 @@ import { FaMapMarkerAlt, FaEdit, FaTrash, FaEye, FaDollarSign } from 'react-icon
 import Swal from 'sweetalert2'
 import useAuth from '../../../hooks/useAuth'
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
+import LoadingSpinner from '../../../components/Shared/LoadingSpinner'
 
 const MyTuitions = () => {
   const { user } = useAuth()
@@ -49,7 +50,7 @@ const MyTuitions = () => {
     })
   }
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner/>;
   }
 
   return (

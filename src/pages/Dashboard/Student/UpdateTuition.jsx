@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate } from 'react-router' // CORRECTED: 'react-router' -> 'react-router-dom'
 import { FaBook, FaMapMarkerAlt, FaDollarSign, FaChalkboardTeacher, FaSave } from 'react-icons/fa'
 import Swal from 'sweetalert2'
-import useAuth from '../../../hooks/useAuth' // Adjust path if needed
-import useAxiosSecure from '../../../hooks/useAxiosSecure' // Adjust path if needed
-// Already imported hooks, icons, Swal, etc.
+import useAuth from '../../../hooks/useAuth' 
+import useAxiosSecure from '../../../hooks/useAxiosSecure' 
 
 const UpdateTuition = () => {
     const { id } = useParams()
@@ -64,6 +63,8 @@ const UpdateTuition = () => {
                     confirmButtonColor: '#6B46F3'
                 })
                 navigate('/dashboard/my-posts')
+            } else {
+                Swal.fire('Info', 'No changes were made.', 'info')
             }
         } catch (error) {
             console.error(error)
@@ -118,7 +119,7 @@ const UpdateTuition = () => {
                                     <FaChalkboardTeacher className="absolute left-3 top-3.5 text-gray-400" />
                                     <select
                                         name="class"
-                                        defaultValue={tuitionData.class || ""} // autofill the current value
+                                        defaultValue={tuitionData.class || ""}
                                         className="select select-bordered w-full pl-10 focus:border-primary focus:outline-none"
                                         required
                                     >

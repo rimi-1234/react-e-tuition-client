@@ -1,4 +1,4 @@
-import { useState } from 'react'
+
 import { useQuery } from '@tanstack/react-query'
 import { FaTrashAlt, FaUserEdit, FaSearch, FaTimes } from 'react-icons/fa'
 import Swal from 'sweetalert2'
@@ -7,10 +7,10 @@ import { useForm } from 'react-hook-form'
 
 const UserManagement = () => {
   const axiosSecure = useAxiosSecure()
-  const [selectedUser, setSelectedUser] = useState(null) // For Edit Modal
+
 
   // 1. Fetch All Users
-  const { data: users = [], refetch, isLoading } = useQuery({
+  const { data: users = [], refetch,  } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
       const res = await axiosSecure.get('/users')
@@ -111,7 +111,7 @@ const UserManagement = () => {
                     className="select select-bordered select-sm w-full max-w-xs focus:border-primary font-urbanist font-bold"
                   >
                     <option value="Student">Student</option>
-                    <option value="Sutor">Tutor</option>
+                    <option value="Tutor">Tutor</option>
                     <option value="Admin">Admin</option>
                   </select>
                 </td>
