@@ -125,9 +125,12 @@ const Hero = () => {
 
             {/* --- Buttons --- */}
             <motion.div variants={fadeUpVariant} initial="hidden" animate="visible" custom={0.4} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4 md:pt-6">
-              <Link to="/register" className="px-6 md:px-8 py-3 md:py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition shadow-lg transform hover:-translate-y-1 text-sm md:text-base">
-                Post a Tuition
-              </Link>
+            <Link 
+    to="/tuitions" 
+    className="px-6 md:px-8 py-3 md:py-4 bg-primary text-white font-bold rounded-xl hover:opacity-90 transition shadow-lg transform hover:-translate-y-1 text-sm md:text-base text-center w-full sm:w-auto"
+  >
+    Find a Tuition
+  </Link>
               <Link to="/about" className="flex items-center gap-1 md:gap-2 text-white font-medium hover:text-primary transition group text-sm md:text-base">
                 How it Works <span className="group-hover:translate-x-1 transition">→</span>
               </Link>
