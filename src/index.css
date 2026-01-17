@@ -26,6 +26,18 @@
 @plugin "daisyui" {
    themes: light --default, dark;
 };
+/* These are your "Definitions" (Keep what you already have) */
+@plugin "daisyui/theme" {
+  name: "light";
+  --color-primary: #6B46F3;
+  /* ... rest of your light colors ... */
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  --color-primary: #6B46F3;
+  /* ... rest of your dark colors ... */
+}
 
 /* 5. Apply Edurock Colors to DaisyUI "Light" Theme */
 @plugin "daisyui/theme" {

@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router';
+import { Sun, Moon } from 'lucide-react'; // Using Lucide for nice icons
 import logo from '../../../assets/logo.png';
 import useAuth from '../../../hooks/useAuth';
 
 const NavBar = () => {
     const { user, logOut } = useAuth();
+    
+    // 1. Initialize theme from localStorage or system preference
+    const [theme, setTheme] = useState(
+        localStorage.getItem("theme") || 
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    );
+
+    // 2. Update the 'data-theme' attribute on the HTML tag
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => (prev === "light" ? "dark" : "light"));
+    };
 
     const handleLogOut = () => {
         logOut()
@@ -15,53 +32,19 @@ const NavBar = () => {
     const navLinks = (
         <>
             <li>
-                <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                        isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"
-                    }>
-                    Home
-                </NavLink>
+                <NavLink to="/" className={({ isActive }) => isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"}>Home</NavLink>
             </li>
-
             <li>
-                <NavLink
-                    to="/tuitions"
-                    className={({ isActive }) =>
-                        isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"
-                    }>
-                    Tuitions
-                </NavLink>
+                <NavLink to="/tuitions" className={({ isActive }) => isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"}>Tuitions</NavLink>
             </li>
-
             <li>
-                <NavLink
-                    to="/tutors"
-                    className={({ isActive }) =>
-                        isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"
-                    }>
-                    Tutors
-                </NavLink>
+                <NavLink to="/tutors" className={({ isActive }) => isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"}>Tutors</NavLink>
             </li>
-
             <li>
-                <NavLink
-                    to="/about"
-                    className={({ isActive }) =>
-                        isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"
-                    }>
-                    About
-                </NavLink>
+                <NavLink to="/about" className={({ isActive }) => isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"}>About</NavLink>
             </li>
-
             <li>
-                <NavLink
-                    to="/contact"
-                    className={({ isActive }) =>
-                        isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"
-                    }>
-                    Contact
-                </NavLink>
+                <NavLink to="/contact" className={({ isActive }) => isActive ? "text-primary font-bold" : "hover:text-primary transition font-medium"}>Contact</NavLink>
             </li>
         </>
     );
@@ -75,17 +58,14 @@ const NavBar = () => {
     };
 
     return (
-        <div className="navbar bg-base-100/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 px-4 md:px-8">
+        <div className="navbar bg-base-100/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 px-4 md:px-8 transition-colors duration-300">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden pl-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                  d="M4 6h16M4 12h8m-8 6h16" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
                         </svg>
                     </div>
-
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 gap-2">
                         {navLinks}
                     </ul>
@@ -105,49 +85,36 @@ const NavBar = () => {
                 </ul>
             </div>
 
-            <div className="navbar-end gap-3">
+            <div className="navbar-end gap-2 md:gap-3">
+                {/* --- THEME TOGGLE BUTTON --- */}
+                <button 
+                    onClick={toggleTheme} 
+                    className="btn btn-ghost btn-circle border border-base-200 hover:border-primary transition-all duration-300"
+                    title="Toggle Theme"
+                >
+                    {theme === "light" ? (
+                        <Moon size={20} className="text-slate-700" />
+                    ) : (
+                        <Sun size={20} className="text-yellow-400" />
+                    )}
+                </button>
+
                 {user ? (
                     <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button"
-                             className="btn btn-ghost btn-circle avatar border hover:border-primary transition">
+                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border hover:border-primary transition">
                             <div className="w-10 rounded-full">
-                                <img
-                                    alt="User Profile"
-                                    src={user.photoURL || "https://i.ibb.co/2k0H4Rq/default-avatar.png"}
-                                />
+                                <img alt="User Profile" src={user.photoURL || "https://i.ibb.co/2k0H4Rq/default-avatar.png"} />
                             </div>
                         </div>
-
-                        <ul tabIndex={0}
-                            className="menu menu-sm dropdown-content mt-3 p-2 shadow-lg bg-base-100 rounded-box w-52 border">
-                            <li className="menu-title px-4 py-2 text-primary font-semibold">
-                                Hi, {user.displayName || "User"}
-                            </li>
-
-                            <li>
-                                <Link to={getDashboardPath()}>
-                                    Dashboard
-                                </Link>
-                            </li>
-
-                            <li>
-                                <Link to="/profile">Profile</Link>
-                            </li>
-
-                            <li>
-                                <button onClick={handleLogOut} className="text-red-500 hover:bg-red-50">
-                                    Logout
-                                </button>
-                            </li>
+                        <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200">
+                            <li className="menu-title px-4 py-2 text-primary font-semibold">Hi, {user.displayName || "User"}</li>
+                            <li><Link to={getDashboardPath()}>Dashboard</Link></li>
+                            <li><Link to="/profile">Profile</Link></li>
+                            <li><button onClick={handleLogOut} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950">Logout</button></li>
                         </ul>
                     </div>
                 ) : (
-                    <Link
-                        to="/login"
-                        className="px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg shadow hover:bg-purple-700 transition transform hover:-translate-y-0.5"
-                    >
-                        Log In
-                    </Link>
+                    <Link to="/login" className="btn btn-primary btn-sm md:btn-md text-white px-6">Log In</Link>
                 )}
             </div>
         </div>

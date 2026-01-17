@@ -1,264 +1,214 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom' 
-import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router'
 import { 
-  FaMapMarkerAlt, FaDollarSign, FaSearch, FaArrowRight, 
-  FaFilter 
-} from 'react-icons/fa'
+  FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaArrowRight, 
+  FaStar, FaClock, FaChalkboardTeacher, FaUserGraduate 
+} from 'react-icons/fa';
 import useAxiosSecure from '../../hooks/useAxiosSecure'
 
 const Tuitions = () => {
   const axiosSecure = useAxiosSecure() 
-  
-  // --- STATE ---
-  const [page, setPage] = useState(1)
-  const limit = 8 
-  
   const [search, setSearch] = useState('')
   const [filterClass, setFilterClass] = useState('')
-  const [filterSubject, setFilterSubject] = useState('')   
-  const [filterLocation, setFilterLocation] = useState('') 
   const [sort, setSort] = useState('newest')
+  const [page, setPage] = useState(1)
+  const limit = 8 // Perfect for 4 cards per row (2 rows)
 
-  // --- EFFECT: Reset to Page 1 on Filter Change ---
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterClass, filterSubject, filterLocation, sort]);
+  // Reset page when filtering
+  useEffect(() => { setPage(1); }, [search, filterClass, sort]);
 
-  // --- EFFECT: Scroll Top on Page Change ---
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [page]);
-
-  // --- DATA FETCHING ---
   const { data, isLoading } = useQuery({
-    queryKey: ['approved-tuitions', search, filterClass, filterSubject, filterLocation, sort, page],
+    queryKey: ['approved-tuitions', search, filterClass, sort, page],
     queryFn: async () => {
       const res = await axiosSecure.get(`/tuitions/status`, {
-          params: {
-              status: 'Approved',
-              search,
-              filterClass,
-              filterSubject,
-              filterLocation,
-              sort,
-              page,
-              limit
-          }
+          params: { status: 'Approved', search, filterClass, sort, page, limit }
       })
-      return res.data
+      return res.data 
     },
     keepPreviousData: true 
   })
 
-  // --- DERIVED VARIABLES ---
   const tuitions = data?.tuitions || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  // --- CUSTOM PAGINATION LOGIC ---
-  const getPageNumbers = () => {
-    // If no pages or 1 page, return [1]
-    if (totalPages <= 1) return [1];
-
-    if (totalPages <= 10) return Array.from({ length: totalPages }, (_, i) => i + 1);
-
-    const pages = [1];
-    const siblingCount = 2; 
-    let start = Math.max(2, page - siblingCount);
-    let end = Math.min(totalPages - 1, page + siblingCount);
-
-    if (page <= siblingCount + 2) end = 5 + siblingCount; 
-    if (page >= totalPages - (siblingCount + 1)) start = totalPages - (4 + siblingCount);
-    
-    start = Math.max(2, start);
-    end = Math.min(totalPages - 1, end);
-
-    if (start > 2) pages.push('...');
-    for (let i = start; i <= end; i++) pages.push(i);
-    if (end < totalPages - 1) pages.push('...');
-    
-    pages.push(totalPages);
-    return pages;
-  };
-
-  // --- ANIMATION ---
-  const containerVariants = { show: { transition: { staggerChildren: 0.1 } } }
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-  }
-
-  const handleReset = () => {
-      setSearch(''); setSort('newest');
-  }
-
   return (
     <div className="min-h-screen bg-base-100 font-sans text-gray-800 pb-20">
       
-      {/* HEADER */}
+      {/* --- SEARCH & FILTER HERO --- */}
       <div className="bg-primary/5 py-12 px-6">
         <div className="max-w-7xl mx-auto text-center">
-             <h1 className="text-4xl font-bold font-display text-gray-900">Browse <span className="text-primary">Tuitions</span></h1>
-             <div className="mt-8 bg-white p-4 rounded-xl shadow-lg border border-gray-100 flex flex-col md:flex-row gap-3 max-w-4xl mx-auto">
-                 <div className="relative flex-1">
-                    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                    <input 
-                        className="input input-bordered w-full pl-10 focus:outline-none focus:border-primary" 
-                        placeholder="Search subject or location..." 
-                        value={search} 
-                        onChange={e => setSearch(e.target.value)} 
-                    />
-                 </div>
-                 <select className="select select-bordered" onChange={(e) => setSort(e.target.value)} value={sort}>
-                    <option value="newest">Newest</option>
-                    <option value="salary_desc">Budget: High-Low</option>
-                    <option value="salary_asc">Budget: Low-High</option>
-                 </select>
-             </div>
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-8">
+            {/* Browse <span className="text-primary">Tuition</span> Jobs */}
+          </h1>
+          
+          <div className="bg-white p-3 rounded-2xl shadow-xl max-w-5xl mx-auto flex flex-col lg:flex-row gap-3 items-center border border-gray-100">
+            <div className="flex-1 w-full relative">
+               <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+               <input 
+                 type="text" 
+                 placeholder="Search by subject, title or area..." 
+                 className="input input-bordered w-full pl-12 focus:border-primary"
+                 onChange={(e) => setSearch(e.target.value)}
+                 value={search}
+               />
+            </div>
+            <div className="flex w-full lg:w-auto gap-3">
+                <select className="select select-bordered w-full md:w-44" onChange={(e) => setFilterClass(e.target.value)} value={filterClass}>
+                  <option value="">All Classes</option>
+                  <option value="O Level">O Level</option>
+                  <option value="A Level">A Level</option>
+                  <option value="Class 10">Class 10</option>
+                  <option value="Class 9">Class 9</option>
+                </select>
+                <select className="select select-bordered w-full md:w-44" onChange={(e) => setSort(e.target.value)} value={sort}>
+                    <option value="newest">Newest First</option>
+                    <option value="salary_desc">Highest Budget</option>
+                    <option value="salary_asc">Lowest Budget</option>
+                </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* RESULTS */}
+      {/* --- LISTING GRID --- */}
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {isLoading ? (
-           <div className="flex justify-center py-20"><span className="loading loading-spinner loading-lg text-primary"></span></div>
-        ) : (
-          <>
-             <div className="flex justify-between items-center mb-6 px-2">
-                <span className="text-gray-500 font-bold">Found {total} jobs</span>
-                {(search || sort !== 'newest') && (
-                    <button onClick={handleReset} className="text-primary text-sm underline flex items-center gap-1">
-                        <FaFilter/> Reset Filters
-                    </button>
-                )}
-             </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading ? (
+            // Skeleton Loader Grid (triggers while data is loading)
+            [...Array(limit)].map((_, i) => <SkeletonCard key={i} />)
+          ) : (
+            tuitions.map((item) => <TuitionCard key={item._id} item={item} />)
+          )}
+        </div>
 
-             <motion.div 
-               variants={containerVariants}
-               initial="hidden" animate="show"
-               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[400px]"
-               key={page} 
-             >
-               <AnimatePresence mode='popLayout'>
-                 {tuitions.map((item) => (
-                   <TuitionCard key={item._id} item={item} variants={itemVariants} />
-                 ))}
-               </AnimatePresence>
-             </motion.div>
+        {!isLoading && tuitions.length === 0 && (
+            <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 mt-10">
+                <p className="text-gray-400 font-bold text-xl">No tuition matches your current filters.</p>
+                <button onClick={() => {setSearch(''); setFilterClass('')}} className="btn btn-link text-primary">Clear all filters</button>
+            </div>
+        )}
 
-             {tuitions.length === 0 && (
-                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-xl mt-4">
-                    <p className="text-gray-400 font-bold text-lg">No results found.</p>
+        {/* --- PAGINATION --- */}
+        {totalPages > 1 && (
+            <div className="flex justify-center mt-16">
+                <div className="join shadow-sm border border-base-200">
+                    <button className="join-item btn btn-md bg-white" onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1}><FaChevronLeft/></button>
+                    <button className="join-item btn btn-md bg-primary text-white border-primary">Page {page} of {totalPages}</button>
+                    <button className="join-item btn btn-md bg-white" onClick={() => setPage(p => Math.min(totalPages, p+1))} disabled={page === totalPages}><FaChevronRight/></button>
                 </div>
-             )}
-             {
-              console.log(total)
-              
-             }
-             {/* ✅ PAGINATION START */}
-             {/* Show if we have ANY results (total > 0) */}
-             {/* {total > 0 && ( */}
-               <div className="flex justify-center mt-16 font-sans">
-                 <div className="join border border-gray-300 rounded-md shadow-sm bg-white">
-                   
-                   {/* PREV BUTTON */}
-                   <button 
-                     onClick={() => setPage(old => Math.max(old - 1, 1))}
-                     disabled={page === 1}
-                     className="join-item btn btn-md bg-white hover:bg-gray-50 text-gray-600 border-r border-gray-300 px-4 font-medium disabled:bg-white disabled:text-gray-300 rounded-none"
-                   >
-                     PREV
-                   </button>
-
-                   {/* PAGE NUMBERS */}
-                   {getPageNumbers().map((number, index) => {
-                     if (number === "...") {
-                       return (
-                         <button 
-                           key={`dots-${index}`} 
-                           className="join-item btn btn-md bg-white border-r border-gray-300 text-gray-400 cursor-default rounded-none pointer-events-none"
-                         >
-                           ...
-                         </button>
-                       );
-                     }
-
-                     return (
-                       <button
-                         key={number}
-                         onClick={() => setPage(number)}
-                         className={`join-item btn btn-md border-r border-gray-300 rounded-none transition-colors px-4 ${
-                           page === number 
-                             ? 'bg-blue-500 text-white border-blue-500' 
-                             : 'bg-white text-gray-600 hover:bg-gray-100'
-                         }`}
-                       >
-                         {number}
-                       </button>
-                     );
-                   })}
-
-                   {/* NEXT BUTTON */}
-                   <button 
-                     onClick={() => setPage(old => Math.min(old + 1, totalPages))}
-                     disabled={page === totalPages || totalPages === 0}
-                     className="join-item btn btn-md bg-white hover:bg-gray-50 text-gray-600 border-l border-gray-300 px-4 font-medium disabled:bg-white disabled:text-gray-300 rounded-none"
-                   >
-                     NEXT
-                   </button>
-
-                 </div>
-               </div>
-             {/* )} */}
-             {/* ✅ PAGINATION END */}
-
-          </>
+            </div>
         )}
       </div>
     </div>
   )
 }
 
-/* --- REUSABLE CARD --- */
-const TuitionCard = ({ item, variants }) => {
-    const gradients = ["from-purple-500 to-indigo-600", "from-blue-500 to-cyan-600", "from-orange-500 to-red-600", "from-emerald-500 to-teal-600"];
-    const gradientIndex = item._id ? item._id.charCodeAt(item._id.length - 1) % gradients.length : 0;
-    
-    return (
-      <motion.div 
-        layout
-        variants={variants}
-        initial="hidden"
-        animate="show"
-        exit="exit"
-        whileHover={{ y: -5, transition: { duration: 0.2 } }} 
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex flex-col h-full"
-      >
-         <div className={`h-24 bg-gradient-to-r ${gradients[gradientIndex]} p-4 flex flex-col justify-between relative overflow-hidden`}>
-            <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/20 rounded-full blur-xl"></div>
-            <span className="bg-white/20 backdrop-blur-md text-white px-3 py-0.5 rounded-full text-xs font-bold w-fit border border-white/30">{item.class}</span>
-            <h3 className="text-lg font-display font-bold text-white tracking-wide truncate">{item.subject}</h3>
-         </div>
-         
-         <div className="p-5 flex-1 flex flex-col">
-            <div className="space-y-3 mb-6">
-               <div className="flex items-center gap-3 text-gray-500 text-sm">
-                   <FaMapMarkerAlt className="text-secondary/80" />
-                   <span className="truncate">{item.location}</span>
-               </div>
-               <div className="flex items-center gap-3">
-                   <FaDollarSign className="text-primary" />
-                   <span className="font-bold text-gray-800 text-lg">৳{item.budget}</span>
-               </div>
+/* --- REUSABLE CARD COMPONENT --- */
+const TuitionCard = ({ item }) => {
+  return (
+    <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full group">
+        
+        {/* --- Top Visual Section --- */}
+        <div className="relative aspect-video overflow-hidden bg-gray-100">
+            <img 
+                src={item.media?.[0] } 
+                alt={item.title} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            
+            {/* Badges Overlay */}
+            <div className="absolute top-3 left-3 flex flex-col gap-2">
+                <span className="bg-primary/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">
+                   {item.class}
+                </span>
+                {item.teachingMode && (
+                   <span className="bg-white/90 backdrop-blur-md text-gray-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg border border-gray-100">
+                    {item.teachingMode}
+                   </span>
+                )}
             </div>
-            <Link to={`/tuition/${item._id}`} className="btn btn-outline btn-primary btn-sm w-full mt-auto rounded-lg group">
-              View Details <FaArrowRight className="ml-1 group-hover:translate-x-1 transition-transform" />
-            </Link>
-         </div>
-      </motion.div>
-    )
-}
 
-export default Tuitions
+            {/* Price Tag Overlay */}
+            <div className="absolute bottom-3 right-3 bg-gray-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1 text-white shadow-xl border border-white/10">
+                <span className="text-xs font-bold text-primary">৳</span>
+                <span className="text-sm font-black tracking-tight">{item.budget}</span>
+                <span className="text-[9px] opacity-60">/mo</span>
+            </div>
+        </div>
+
+        {/* --- Content Section --- */}
+        <div className="p-6 flex-1 flex flex-col">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-lg font-display font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
+              {item.subject}
+            </h3>
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-500">
+                <FaStar size={10}/> 4.9
+            </div>
+          </div>
+          
+          <p className="text-gray-400 text-[11px] mb-5 line-clamp-2 leading-relaxed h-[32px]">
+            {item.description || "Expert tutoring for academic excellence..."}
+          </p>
+
+          {/* Key Specifications Grid */}
+          <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-6 border-t border-gray-50 pt-4">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FaMapMarkerAlt className="text-rose-400 shrink-0" size={12} />
+                <span className="truncate text-[11px] font-semibold text-gray-600">{item.location}</span>
+              </div>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FaClock className="text-sky-400 shrink-0" size={12} />
+                <span className="truncate text-[11px] font-semibold text-gray-600">{item.schedule || 'Flexible'}</span>
+              </div>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FaChalkboardTeacher className="text-emerald-400 shrink-0" size={12} />
+                <span className="truncate text-[11px] font-semibold text-gray-600">{item.preferredTutor || 'Any'} Tutor</span>
+              </div>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FaUserGraduate className="text-orange-400 shrink-0" size={12} />
+                <span className="truncate text-[11px] font-semibold text-gray-600">{item.experienceNeeded || 'Student'}</span>
+              </div>
+          </div>
+          
+          {/* Action Footer */}
+          <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50">
+             <div className="flex items-center gap-2">
+                <img src={item.recruiterImage} className="w-6 h-6 rounded-full object-cover" alt="" />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{item.recruiterName?.split(' ')[0]}</span>
+             </div>
+             <Link 
+                to={`/tuition/${item._id}`} 
+                className="btn btn-primary btn-xs px-4 rounded-lg text-white font-bold hover:gap-3 transition-all"
+              >
+                Apply <FaArrowRight size={10} />
+              </Link>
+          </div>
+        </div>
+    </div>
+  );
+};
+/* --- SKELETON CARD (Exact same layout as TuitionCard) --- */
+const SkeletonCard = () => (
+  <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden h-[410px] flex flex-col animate-pulse">
+    {/* Image Area */}
+    <div className="aspect-video bg-gray-200"></div>
+    
+    {/* Content Area */}
+    <div className="p-5 flex-1 flex flex-col">
+      <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+      <div className="h-4 bg-gray-100 rounded w-full mb-2"></div>
+      <div className="h-4 bg-gray-100 rounded w-5/6 mb-4"></div>
+      
+      <div className="mt-auto space-y-3">
+        <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-100 rounded w-1/3"></div>
+        <div className="h-10 bg-gray-200 rounded-xl w-full mt-2"></div>
+      </div>
+    </div>
+  </div>
+)
+
+export default Tuitions;

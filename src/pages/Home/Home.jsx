@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { 
     FaChalkboardTeacher, FaSearch, FaUserCheck, 
-    FaShieldAlt, FaClock, FaStar
+    FaShieldAlt, FaClock, FaStar,
+    FaQuoteLeft
 } from 'react-icons/fa';
 
 // Imports
@@ -11,6 +12,8 @@ import Hero from "../../components/Shared/Hero/Hero";
 import LatestTuitions from "./LatestTuitions"; // Imported here
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import LatestTutors from './LatestTutors';
+import SubjectExplorer from './SubjectExplorer';
+import SuccessStories from './SuccessStories';
 
 const Home = () => {
     const axiosSecure = useAxiosSecure();
@@ -173,6 +176,8 @@ const { data: latestPosts = [], isLoading: loadingPosts } = useQuery({
                     </motion.div>
                 </div>
             </section>
+            <SubjectExplorer></SubjectExplorer>
+            <SuccessStories></SuccessStories>
         </div>
     );
 };

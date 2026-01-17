@@ -60,7 +60,7 @@ Follow these steps to run the project on your local machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+git clone [https://github.com/rimi-1234/react-e-tuition-client.git](https://github.com/rimi-1234/react-e-tuition-client.git)
 2. Backend Setup
 Navigate to the server folder and install dependencies:
 

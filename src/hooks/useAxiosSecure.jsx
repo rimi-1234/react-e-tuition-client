@@ -25,20 +25,25 @@ const useAxiosSecure = () => {
       )
 
       // Add response interceptor
-      const responseInterceptor = axiosInstance.interceptors.response.use(
-        res => res,
-        err => {
-          if (err?.response?.status === 401 || err?.response?.status === 403) {
-            logOut()
-              .then(() => {
-                console.log('Logged out successfully.')
-              })
-              .catch(console.error)
-            navigate('/login')
-          }
-          return Promise.reject(err)
-        }
-      )
+    // Add response interceptor
+const responseInterceptor = axiosInstance.interceptors.response.use(
+  res => {
+    console.log('Response received:', res); // Log for debugging
+    return res; // VERY IMPORTANT: You must return the response
+  },
+  async err => { // Added 'async' if you want to use await inside
+    if (err?.response?.status === 401 || err?.response?.status === 403) {
+      try {
+        await logOut();
+        console.log('Logged out successfully due to expired session.');
+        navigate('/login');
+      } catch (logoutError) {
+        console.error('Logout failed:', logoutError);
+      }
+    }
+    return Promise.reject(err);
+  }
+);
 
       // Cleanup to prevent multiple interceptors on re-renders
       return () => {

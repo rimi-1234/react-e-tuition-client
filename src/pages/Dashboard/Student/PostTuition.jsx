@@ -1,156 +1,187 @@
 import React from 'react';
-
-import { BookOpen, MapPin, DollarSign, Calendar, FileText, User } from 'lucide-react';
+import { BookOpen, MapPin, DollarSign, Calendar, ImagePlus, X, Info, LayoutList } from 'lucide-react';
 import usePostTuition from '../../../hooks/usePostTuition';
 
 const PostTuition = () => {
-    
-    // Extract logic from the hook
-    const { register, errors, isSubmitting, handleFormSubmit } = usePostTuition();
+    const { 
+        register, 
+        errors, 
+        isSubmitting, 
+        handleFormSubmit, 
+        previews, 
+        handleImageChange, 
+        removeImage 
+    } = usePostTuition();
 
     return (
-        <div className="max-w-4xl mx-auto p-4 md:p-8 font-body">
+        <div className="max-w-6xl mx-auto p-4 md:p-10 font-body">
             
-            {/* Header Section */}
-            <div className="text-center mb-10">
-                <h2 className="text-3xl md:text-4xl font-bold font-display text-primary">Post New Tuition</h2>
-                <p className="text-base-content/70 mt-2">Fill in the details to find your perfect tutor.</p>
+            <div className="mb-10 text-center md:text-left">
+                <h1 className="text-3xl md:text-5xl font-black font-display text-primary">Post New Tuition</h1>
+                <p className="text-gray-500 mt-2">Fill out the sections below to attract the best tutors.</p>
             </div>
 
-            {/* The Form */}
-            <form onSubmit={handleFormSubmit} className="bg-base-100 shadow-xl rounded-2xl p-6 md:p-10 border border-base-200">
+            <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
-                {/* 1. Read-Only User Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-4 bg-base-200/50 rounded-lg">
-                    <div className="form-control">
-                        <label className="label text-xs uppercase tracking-wide font-bold text-base-content/50">Recruiter Name</label>
-                        <div className="flex items-center gap-2 font-semibold opacity-70">
-                            <User size={16} />
-                            <input {...register('name')} readOnly className="bg-transparent outline-none w-full" />
+                {/* --- LEFT SIDE: DESCRIPTION & MEDIA --- */}
+                <div className="lg:col-span-2 space-y-8">
+                    
+                    {/* Section: Overview */}
+                    <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-base-200">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <Info className="text-secondary"/> Description / Overview
+                        </h2>
+                        <div className="space-y-5">
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase text-gray-400">Listing Headline</label>
+                                <input 
+                                    {...register('title', { required: "A catchy title is required" })}
+                                    className={`input input-bordered w-full focus:input-primary font-semibold ${errors.title ? 'border-error' : ''}`}
+                                    placeholder="e.g. Need experienced Math tutor for Class 10 student"
+                                />
+                                {errors.title && <span className="text-error text-xs mt-1">{errors.title.message}</span>}
+                            </div>
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase text-gray-400">Detailed Description</label>
+                                <textarea 
+                                    {...register('description', { 
+                                        required: "Please provide specific details",
+                                        minLength: { value: 20, message: "Description is too short" }
+                                    })}
+                                    className={`textarea textarea-bordered h-48 focus:textarea-primary text-base ${errors.description ? 'border-error' : ''}`}
+                                    placeholder="Describe the student's needs, curriculum, and expectations..."
+                                />
+                                {errors.description && <span className="text-error text-xs mt-1">{errors.description.message}</span>}
+                            </div>
                         </div>
                     </div>
-                    <div className="form-control">
-                        <label className="label text-xs uppercase tracking-wide font-bold text-base-content/50">Email</label>
-                        <div className="flex items-center gap-2 font-semibold opacity-70">
-                            <span className="w-4">@</span>
-                            <input {...register('email')} readOnly className="bg-transparent outline-none w-full" />
+
+                    {/* Section: Media Gallery */}
+                    <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-base-200">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <ImagePlus className="text-secondary"/> Media / Attachments
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {previews.map((src, i) => (
+                                <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden border">
+                                    <img src={src} alt="preview" className="w-full h-full object-cover" />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => removeImage(i)} 
+                                        className="absolute top-1 right-1 btn btn-circle btn-xs btn-error text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <X size={12}/>
+                                    </button>
+                                </div>
+                            ))}
+                            {previews.length < 4 && (
+                                <label className="aspect-square rounded-2xl border-2 border-dashed border-base-300 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary transition-all">
+                                    <ImagePlus className="text-base-300" />
+                                    <span className="text-[10px] uppercase font-bold text-gray-400 mt-2">Add Photo</span>
+                                    <input type="file" hidden multiple accept="image/*" onChange={handleImageChange} />
+                                </label>
+                            )}
                         </div>
+                        <p className="text-[10px] text-gray-400 mt-4 uppercase font-medium tracking-wider">
+                            Max 4 images (Syllabus, past results, or textbook pages)
+                        </p>
                     </div>
                 </div>
 
-                <div className="divider">Tuition Details</div>
+                {/* --- RIGHT SIDE: SPECIFICATIONS --- */}
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-primary/5 p-6 md:p-8 rounded-3xl border border-primary/10 lg:sticky lg:top-24">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-primary">
+                            <LayoutList size={20}/> Specifications
+                        </h2>
+                        
+                        <div className="space-y-4">
+                            {/* Subject */}
+                            <div className="form-control">
+                                <label className="label font-bold text-[10px] uppercase text-gray-500">Subject</label>
+                                <div className={`flex items-center gap-3 bg-white p-3 rounded-xl border ${errors.subject ? 'border-error' : 'border-base-200'}`}>
+                                    <BookOpen size={18} className="text-primary/60"/>
+                                    <input 
+                                        {...register('subject', { required: "Subject is required" })} 
+                                        className="outline-none w-full text-sm font-semibold" 
+                                        placeholder="Mathematics" 
+                                    />
+                                </div>
+                            </div>
 
-                {/* 2. Subject & Class */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
-                    <div className="form-control">
-                        <label className="label font-semibold">Subject <span className="text-error">*</span></label>
-                        <label className={`input input-bordered flex items-center gap-2 focus-within:input-primary ${errors.subject ? 'input-error' : ''}`}>
-                            <BookOpen size={18} className="text-base-content/50" />
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Mathematics" 
-                                {...register('subject', { required: "Subject is required" })} 
-                                className="grow" 
-                            />
-                        </label>
-                        {errors.subject && <span className="text-error text-xs mt-1">{errors.subject.message}</span>}
-                    </div>
+                            {/* Class */}
+                            <div className="form-control">
+                                <label className="label font-bold text-[10px] uppercase text-gray-500">Grade / Class</label>
+                                <select 
+                                    {...register('class', { required: "Select a class" })} 
+                                    className="select select-bordered w-full rounded-xl bg-white border-base-200 text-sm"
+                                >
+                                    <option value="">Select Grade</option>
+                                    <option value="Class 9">Class 9</option>
+                                    <option value="SSC">SSC / Class 10</option>
+                                    <option value="HSC">HSC</option>
+                                    <option value="O Level">O Level</option>
+                                    <option value="A Level">A Level</option>
+                                </select>
+                            </div>
 
-                    <div className="form-control">
-                        <label className="label font-semibold">Class / Grade <span className="text-error">*</span></label>
-                        <select 
-                            {...register('class', { required: "Class is required" })} 
-                            className={`select select-bordered w-full focus:select-primary ${errors.class ? 'select-error' : ''}`}
+                            {/* Budget */}
+                            <div className="form-control">
+                                <label className="label font-bold text-[10px] uppercase text-gray-500">Monthly Budget (৳)</label>
+                                <div className={`flex items-center gap-3 bg-white p-3 rounded-xl border ${errors.budget ? 'border-error' : 'border-base-200'}`}>
+                                    <DollarSign size={18} className="text-green-600"/>
+                                    <input 
+                                        type="number" 
+                                        {...register('budget', { required: "Budget is required", min: 500 })} 
+                                        className="outline-none w-full text-sm font-bold text-green-700" 
+                                        placeholder="5000" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Schedule */}
+                            <div className="form-control">
+                                <label className="label font-bold text-[10px] uppercase text-gray-500">Schedule</label>
+                                <div className={`flex items-center gap-3 bg-white p-3 rounded-xl border ${errors.schedule ? 'border-error' : 'border-base-200'}`}>
+                                    <Calendar size={18} className="text-primary/60"/>
+                                    <input 
+                                        {...register('schedule', { required: "e.g., 3 days/week" })} 
+                                        className="outline-none w-full text-sm font-semibold" 
+                                        placeholder="3 Days / Week" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Location */}
+                            <div className="form-control">
+                                <label className="label font-bold text-[10px] uppercase text-gray-500">Area / Location</label>
+                                <div className={`flex items-center gap-3 bg-white p-3 rounded-xl border ${errors.location ? 'border-error' : 'border-base-200'}`}>
+                                    <MapPin size={18} className="text-primary/60"/>
+                                    <input 
+                                        {...register('location', { required: "Location is required" })} 
+                                        className="outline-none w-full text-sm font-semibold" 
+                                        placeholder="Dhanmondi, Dhaka" 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            disabled={isSubmitting} 
+                            className="btn btn-primary w-full mt-10 rounded-2xl text-white font-bold shadow-xl shadow-primary/20 disabled:bg-gray-400"
                         >
-                            <option value="" disabled>Select Class</option>
-                            <option>Class 6</option>
-                            <option>Class 7</option>
-                            <option>Class 8</option>
-                            <option>Class 9</option>
-                            <option>SSC / Class 10</option>
-                            <option>HSC 1st Year</option>
-                            <option>HSC 2nd Year</option>
-                            <option>O Level</option>
-                            <option>A Level</option>
-                        </select>
-                        {errors.class && <span className="text-error text-xs mt-1">{errors.class.message}</span>}
+                            {isSubmitting ? (
+                                <div className="flex items-center gap-2">
+                                    <span className="loading loading-spinner loading-sm"></span>
+                                    <span>Processing...</span>
+                                </div>
+                            ) : (
+                                "Post Tuition Request"
+                            )}
+                        </button>
                     </div>
                 </div>
-
-                {/* 3. Location & Budget */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
-                    <div className="form-control">
-                        <label className="label font-semibold">Location <span className="text-error">*</span></label>
-                        <label className={`input input-bordered flex items-center gap-2 focus-within:input-primary ${errors.location ? 'input-error' : ''}`}>
-                            <MapPin size={18} className="text-base-content/50" />
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Dhanmondi, Dhaka" 
-                                {...register('location', { required: "Location is required" })} 
-                                className="grow" 
-                            />
-                        </label>
-                        {errors.location && <span className="text-error text-xs mt-1">{errors.location.message}</span>}
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label font-semibold">Budget (Tk) <span className="text-error">*</span></label>
-                        <label className={`input input-bordered flex items-center gap-2 focus-within:input-primary ${errors.budget ? 'input-error' : ''}`}>
-                            <DollarSign size={18} className="text-base-content/50" />
-                            <input 
-                                type="number" 
-                                placeholder="5000" 
-                                {...register('budget', { required: "Budget is required", min: { value: 500, message: "Min 500 Tk" } })} 
-                                className="grow" 
-                            />
-                        </label>
-                        {errors.budget && <span className="text-error text-xs mt-1">{errors.budget.message}</span>}
-                    </div>
-                </div>
-
-                {/* 4. Schedule */}
-                <div className="form-control mb-5">
-                    <label className="label font-semibold">Preferred Schedule</label>
-                    <label className={`input input-bordered flex items-center gap-2 focus-within:input-primary ${errors.schedule ? 'input-error' : ''}`}>
-                        <Calendar size={18} className="text-base-content/50" />
-                        <input 
-                            type="text" 
-                            placeholder="e.g. 3 days a week, After 6 PM" 
-                            {...register('schedule', { required: "Schedule is required" })} 
-                            className="grow" 
-                        />
-                    </label>
-                    {errors.schedule && <span className="text-error text-xs mt-1">{errors.schedule.message}</span>}
-                </div>
-
-                {/* 5. Additional Notes */}
-                <div className="form-control mb-8">
-                    <label className="label font-semibold">Additional Notes</label>
-                    <div className="relative">
-                        <FileText size={18} className="absolute top-4 left-4 text-base-content/50" />
-                        <textarea 
-                            {...register('notes')} 
-                            className="textarea textarea-bordered h-24 w-full pl-11 focus:textarea-primary" 
-                            placeholder="Specific requirements (e.g., female tutor preferred, English medium background)..."
-                        ></textarea>
-                    </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="form-control">
-                    <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="btn btn-primary text-white font-display text-lg uppercase tracking-wider disabled:bg-opacity-50"
-                    >
-                        {isSubmitting ? (
-                            <span className="loading loading-spinner loading-md"> 'Posting...' </span>
-                        ) : (
-                            "Post Tuition Request"
-                        )}
-                    </button>
-                </div>
-
             </form>
         </div>
     );

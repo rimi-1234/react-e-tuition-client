@@ -3,18 +3,20 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { 
   FaMapMarkerAlt, FaChalkboardTeacher, FaCalendarAlt, 
-  FaClock, FaArrowLeft, FaCheckCircle, FaSpinner 
+  FaClock, FaArrowLeft, FaCheckCircle, FaSpinner, 
+  FaGraduationCap, FaWallet, FaUserGraduate, FaStar, FaQuoteLeft
 } from 'react-icons/fa'
 import { useState } from 'react'
-import Swal from 'sweetalert2' // or use react-hot-toast
+import Swal from 'sweetalert2'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
-import useAuth from '../../hooks/useAuth' // Assuming you have this hook
+import useAuth from '../../hooks/useAuth'
 
 const TuitionDetails = () => {
   const { id } = useParams()
   const axiosSecure = useAxiosSecure()
-  const { user } = useAuth() // Get logged in user
+  const { user } = useAuth()
   const navigate = useNavigate()
+  const [activeImg, setActiveImg] = useState(0)
 
   // --- 1. Fetch Tuition Data ---
   const { data: tuition = {}, isLoading } = useQuery({
@@ -36,24 +38,29 @@ const TuitionDetails = () => {
             Swal.fire('Success', 'Application submitted successfully!', 'success');
             document.getElementById('apply_modal').close();
         }
-    },
-    onError: (error) => {
-        Swal.fire('Error', error.response?.data?.message || 'Something went wrong', 'error');
     }
   })
 
-  // --- 3. Handle Form Submit ---
+  if (isLoading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex flex-col items-center gap-4">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <p className="font-bold text-gray-400 animate-pulse">Loading Tuition Details...</p>
+      </div>
+    </div>
+  )
+
+  const { 
+    subject, class: className, location, budget, schedule, 
+    description, recruiterImage, recruiterName, postedDate, _id, media = [] 
+  } = tuition;
+
   const handleApply = (e) => {
     e.preventDefault();
     const form = e.target;
-    
-    // Construct Application Data
     const applicationData = {
-        tuitionId: tuition._id,
-        tuitionSubject: tuition.subject, // Store for easy display on dashboard
-        tuitionLocation: tuition.location,
-        recruiterEmail: tuition.recruiterEmail || tuition.email, // Ensure you have this in DB
-        tutorName: user?.displayName,
+        tuitionId: _id,
+        tuitionSubject: subject,
         tutorEmail: user?.email,
         qualifications: form.qualifications.value,
         experience: form.experience.value,
@@ -61,240 +68,210 @@ const TuitionDetails = () => {
         status: 'Pending',
         appliedDate: new Date()
     }
-
     mutate(applicationData);
   }
 
-  // --- Loading State ---
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    )
-  }
-
-  // Destructure Data
-  const { 
-    subject, class: className, location, budget, schedule, 
-    notes, recruiterImage, name, postedDate, _id 
-  } = tuition;
-
-  // Gradient Logic
-  const gradients = [
-    "from-purple-600 to-indigo-700",
-    "from-blue-600 to-cyan-700",
-    "from-orange-500 to-red-600",
-    "from-emerald-500 to-teal-600"
-  ];
-  const gradientIndex = _id ? _id.charCodeAt(_id.length - 1) % gradients.length : 0;
-  const selectedGradient = gradients[gradientIndex];
-
   return (
-    <div className="min-h-screen bg-base-100 font-sans text-gray-800 pb-20">
+    <div className="min-h-screen bg-[#F8FAFC] pb-20">
       
-      {/* --- HEADER SECTION (Motion Added) --- */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`relative bg-gradient-to-r ${selectedGradient} py-20 px-6`}
-      >
-        <div className="max-w-7xl mx-auto">
-            <Link to="/tuitions" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors">
-                <FaArrowLeft className="mr-2" /> Back to Tuitions
-            </Link>
+      {/* --- HERO / HEADER --- */}
+      <div className="bg-white border-b border-gray-100 pt-10 pb-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <Link to="/tuitions" className="inline-flex items-center text-gray-400 hover:text-primary mb-8 font-bold text-sm transition-all group">
+            <FaArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" /> BACK TO LISTINGS
+          </Link>
+          
+          <div className="flex flex-col lg:flex-row justify-between gap-8">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+                  {className}
+                </span>
+                <span className="bg-secondary/10 text-secondary px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+                  {schedule} Days/Week
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">
+                {subject} <span className="text-primary">Tutor</span> Needed
+              </h1>
+              <div className="flex items-center text-gray-500 gap-4 font-medium">
+                <span className="flex items-center gap-1.5"><FaMapMarkerAlt className="text-red-400"/> {location}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                <span>Posted {new Date(postedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric'})}</span>
+              </div>
+            </div>
+
+            <div className="bg-primary text-white p-8 rounded-[2.5rem] shadow-2xl shadow-primary/30 min-w-[280px] flex flex-col justify-center text-center lg:text-left">
+               <p className="text-primary-content/70 font-bold uppercase tracking-tighter text-sm mb-1">Monthly Budget</p>
+               <h2 className="text-5xl font-black">৳{budget?.toLocaleString()}</h2>
+               <p className="mt-2 text-primary-content/60 text-xs italic">Negotiable based on experience</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 -mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* --- LEFT SIDE: CONTENT (8 Cols) --- */}
+          <div className="lg:col-span-8 space-y-10">
             
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                <div>
-                    <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-sm font-bold border border-white/30 inline-block mb-4">
-                        {className}
-                    </span>
-                    <motion.h1 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-3xl md:text-5xl font-display font-bold text-white mb-2"
-                    >
-                        {subject} Tutor Needed
-                    </motion.h1>
-                    <div className="flex items-center text-white/90 gap-2 text-lg">
-                        <FaMapMarkerAlt /> {location}
-                    </div>
+            {/* 1. MEDIA GALLERY */}
+            {media.length > 0 && (
+              <div className="bg-white p-4 rounded-[2rem] shadow-sm border border-gray-100">
+                <div className="aspect-video w-full overflow-hidden rounded-2xl bg-gray-100">
+                  <img src={media[activeImg]} alt="Tuition Media" className="w-full h-full object-cover transition-all duration-500" />
                 </div>
-                
-                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 text-white min-w-[200px]">
-                    <p className="text-sm opacity-80">Salary / Budget</p>
-                    <p className="text-3xl font-bold font-display">৳{budget}</p>
-                    <p className="text-xs opacity-80">per month</p>
+                {media.length > 1 && (
+                  <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
+                    {media.map((img, index) => (
+                      <button 
+                        key={index} 
+                        onClick={() => setActiveImg(index)}
+                        className={`w-24 h-20 rounded-xl overflow-hidden border-4 transition-all flex-shrink-0 ${activeImg === index ? 'border-primary' : 'border-transparent opacity-60'}`}
+                      >
+                        <img src={img} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 2. DESCRIPTION SECTON */}
+            <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                <span className="w-2 h-8 bg-primary rounded-full"></span> Description & Overview
+              </h3>
+              <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-line italic font-medium">
+                "{description || "No specific details provided for this tuition."}"
+              </p>
+            </div>
+
+            {/* 3. KEY SPECIFICATIONS GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <SpecCard icon={<FaUserGraduate/>} label="Student Level" value={className} color="bg-blue-50 text-blue-600" />
+               <SpecCard icon={<FaCalendarAlt/>} label="Weekly Schedule" value={`${schedule} Days Per Week`} color="bg-purple-50 text-purple-600" />
+               <SpecCard icon={<FaWallet/>} label="Salary" value={`৳${budget} / Month`} color="bg-emerald-50 text-emerald-600" />
+               <SpecCard icon={<FaGraduationCap/>} label="Subject" value={subject} color="bg-orange-50 text-orange-600" />
+            </div>
+
+            {/* 4. REVIEWS SECTION (Static Design) */}
+            <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
+               <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-2xl font-black text-gray-900">Guardian Reviews</h3>
+                  <div className="flex items-center gap-1 text-yellow-500 font-bold">
+                    <FaStar/> <FaStar/> <FaStar/> <FaStar/> <FaStar/> 
+                    <span className="text-gray-400 ml-2">(14 Reviews)</span>
+                  </div>
+               </div>
+               <div className="space-y-6">
+                  <div className="p-6 bg-gray-50 rounded-2xl relative">
+                    <FaQuoteLeft className="absolute top-4 right-6 text-gray-200 text-4xl"/>
+                    <p className="text-gray-600 italic mb-4">"The previous tutor we found through this platform was exceptional for {subject}. Highly recommend hiring based on verified qualifications."</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/20"></div>
+                      <span className="font-bold text-gray-800">Sarah Ahmed</span>
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+
+          {/* --- RIGHT SIDE: ACTION SIDEBAR (4 Cols) --- */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="sticky top-10">
+              <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-50">
+                   <img src={recruiterImage} className="w-16 h-16 rounded-2xl object-cover" alt="Recruiter" />
+                   <div>
+                     <p className="text-[10px] font-black text-primary uppercase tracking-widest">Posted By</p>
+                     <h4 className="text-xl font-black text-gray-900">{recruiterName}</h4>
+                   </div>
+                </div>
+
+                <div className="space-y-4">
+                   <button 
+                    onClick={() => user ? document.getElementById('apply_modal').showModal() : Swal.fire('Login Required', 'Please login to apply', 'warning')}
+                    className="btn btn-primary w-full h-16 rounded-2xl text-lg font-black shadow-xl shadow-primary/20"
+                   >
+                     Apply For This Job
+                   </button>
+                   <button className="btn btn-outline border-2 w-full h-16 rounded-2xl font-black">
+                     Save To Favorites
+                   </button>
+                </div>
+
+                <div className="mt-8 space-y-4 bg-yellow-50/50 p-6 rounded-2xl border border-yellow-100">
+                   <h5 className="font-bold text-yellow-800 text-sm flex items-center gap-2">
+                     <FaCheckCircle/> Safety Protocol
+                   </h5>
+                   <ul className="text-xs text-yellow-700/80 space-y-2 font-medium">
+                     <li>• Never pay any "processing fees" to recruiters.</li>
+                     <li>• Always verify the location in daylight.</li>
+                     <li>• Report suspicious postings immediately.</li>
+                   </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* --- MODAL (Same as your code but styled) --- */}
+      <dialog id="apply_modal" className="modal">
+        <div className="modal-box rounded-[2rem] p-10 max-w-2xl">
+          <h3 className="font-black text-3xl mb-2">Submit Application</h3>
+          <p className="text-gray-400 font-medium mb-8 uppercase text-xs tracking-[0.2em]">Subject: {subject} • {className}</p>
+          <form onSubmit={handleApply} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-control">
+                <label className="label font-bold text-gray-700">Full Name</label>
+                <input type="text" value={user?.displayName} readOnly className="input input-bordered rounded-xl bg-gray-50" />
+              </div>
+              <div className="form-control">
+                <label className="label font-bold text-gray-700">Email Address</label>
+                <input type="text" value={user?.email} readOnly className="input input-bordered rounded-xl bg-gray-50" />
+              </div>
+            </div>
+            <div className="form-control">
+                <label className="label font-bold text-gray-700">Current Qualifications</label>
+                <input name="qualifications" placeholder="e.g. BSc in Math (NSU)" className="input input-bordered rounded-xl focus:border-primary" required />
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+                <div className="form-control">
+                    <label className="label font-bold text-gray-700">Years of Experience</label>
+                    <input name="experience" placeholder="e.g. 3 years" className="input input-bordered rounded-xl" required />
+                </div>
+                <div className="form-control">
+                    <label className="label font-bold text-gray-700">Desired Salary</label>
+                    <input name="expectedSalary" type="number" defaultValue={budget} className="input input-bordered rounded-xl" required />
                 </div>
             </div>
+            <div className="modal-action">
+              <button type="button" className="btn btn-ghost font-bold" onClick={() => document.getElementById('apply_modal').close()}>Cancel</button>
+              <button type="submit" disabled={isApplying} className="btn btn-primary px-10 rounded-xl font-black">
+                {isApplying ? <FaSpinner className="animate-spin"/> : 'Send Application'}
+              </button>
+            </div>
+          </form>
         </div>
-      </motion.div>
-
-      {/* --- MAIN CONTENT GRID --- */}
-      <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* LEFT COLUMN: DETAILS */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="lg:col-span-2 space-y-8"
-            >
-                {/* 1. Job Info Card */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <FaChalkboardTeacher className="text-primary"/> Tuition Overview
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InfoItem icon={<FaCalendarAlt />} label="Days per Week" value={`${schedule} Days`} />
-                        <InfoItem icon={<FaClock />} label="Posted Date" value={new Date(postedDate).toLocaleDateString()} />
-                    </div>
-                </div>
-
-                {/* 2. Notes / Description */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Requirements & Notes</h3>
-                    <div className="prose text-gray-600 leading-relaxed whitespace-pre-line">
-                        {notes || "No additional notes provided."}
-                    </div>
-                </div>
-
-                {/* 3. Posted By */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="avatar">
-                        <div className="w-14 rounded-full border border-gray-200">
-                            <img src={recruiterImage || "https://i.ibb.co/v6zPZF2j/cover.jpg"} alt={name} />
-                        </div>
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-500">Posted by</p>
-                        <h4 className="font-bold text-lg text-gray-900 capitalize">{name}</h4>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* RIGHT COLUMN: SIDEBAR ACTION */}
-            <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="lg:col-span-1"
-            >
-                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 sticky top-24">
-                    <div className="text-center mb-6">
-                        <p className="text-gray-500 text-sm mb-1">Job ID: {_id?.slice(-6).toUpperCase()}</p>
-                        <h3 className="text-2xl font-bold text-gray-900">Interested?</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                        <button 
-                            className="btn btn-primary w-full h-14 text-lg font-bold shadow-lg shadow-primary/30"
-                            onClick={() => {
-                                if(user) {
-                                    document.getElementById('apply_modal').showModal()
-                                } else {
-                                    Swal.fire('Login Required', 'Please login to apply.', 'warning')
-                                    // navigate('/login')
-                                }
-                            }}
-                        >
-                            Apply Now
-                        </button>
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-gray-100">
-                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Safety Tips</h4>
-                        <ul className="text-sm text-gray-500 space-y-2">
-                            <li className="flex gap-2"><FaCheckCircle className="text-green-500 flex-shrink-0 mt-0.5"/> Verify location before going.</li>
-                            <li className="flex gap-2"><FaCheckCircle className="text-green-500 flex-shrink-0 mt-0.5"/> Discuss salary clearly.</li>
-                        </ul>
-                    </div>
-                </div>
-            </motion.div>
-
-        </div>
-      </div>
-
-      {/* --- APPLY MODAL --- */}
-      <dialog id="apply_modal" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box p-8 max-w-lg">
-            <h3 className="font-bold text-2xl mb-1">Apply Now</h3>
-            <p className="text-gray-500 mb-6 text-sm">
-                Apply for <span className="font-semibold text-gray-700">{subject}</span>
-            </p>
-            
-            <form onSubmit={handleApply} className="space-y-4">
-                
-                {/* Read-Only Fields */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="form-control">
-                        <label className="label"><span className="label-text">Name</span></label>
-                        <input type="text" value={user?.displayName || ''} readOnly className="input input-bordered bg-gray-100 text-gray-500" />
-                    </div>
-                    <div className="form-control">
-                        <label className="label"><span className="label-text">Email</span></label>
-                        <input type="text" value={user?.email || ''} readOnly className="input input-bordered bg-gray-100 text-gray-500" />
-                    </div>
-                </div>
-
-                {/* Tutor Inputs */}
-                <div className="form-control">
-                    <label className="label"><span className="label-text">Qualifications</span></label>
-                    <input name="qualifications" type="text" placeholder="e.g. BSc in Math, BUET" className="input input-bordered focus:border-primary" required />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="form-control">
-                        <label className="label"><span className="label-text">Experience</span></label>
-                        <input name="experience" type="text" placeholder="e.g. 2 years" className="input input-bordered focus:border-primary" required />
-                    </div>
-                    <div className="form-control">
-                        <label className="label"><span className="label-text">Expected Salary</span></label>
-                        <input name="expectedSalary" type="number" defaultValue={budget} placeholder="Enter Amount" className="input input-bordered focus:border-primary" required />
-                    </div>
-                </div>
-
-                <div className="modal-action pt-4">
-                    <button 
-                        type="button" 
-                        className="btn btn-ghost" 
-                        onClick={()=>document.getElementById('apply_modal').close()}
-                        disabled={isApplying}
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        type="submit" 
-                        className="btn btn-primary px-8"
-                        disabled={isApplying}
-                    >
-                        {isApplying ? <><FaSpinner className="animate-spin"/> Submitting...</> : 'Confirm Application'}
-                    </button>
-                </div>
-            </form>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-        </form>
       </dialog>
-
     </div>
   )
 }
 
-const InfoItem = ({ icon, label, value }) => (
-    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-        <div className="text-2xl text-primary bg-white p-3 rounded-lg shadow-sm">
-            {icon}
-        </div>
-        <div>
-            <p className="text-sm text-gray-500 mb-0.5">{label}</p>
-            <p className="font-bold text-gray-800">{value}</p>
-        </div>
+const SpecCard = ({ icon, label, value, color }) => (
+  <div className={`p-6 rounded-[2rem] border border-gray-100 bg-white flex items-center gap-5 transition-all hover:shadow-md`}>
+    <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center text-2xl`}>
+      {icon}
     </div>
+    <div>
+      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{label}</p>
+      <p className="font-bold text-gray-800 text-lg leading-tight">{value}</p>
+    </div>
+  </div>
 )
 
-export default TuitionDetails
+export default TuitionDetails;

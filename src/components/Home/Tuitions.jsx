@@ -1,253 +1,236 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
-import { FaMapMarkerAlt, FaDollarSign, FaSearch, FaArrowRight, FaSortAmountDown, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import {
+  FaMapMarkerAlt, FaDollarSign, FaSearch, FaArrowRight,
+  FaSortAmountDown, FaChevronLeft, FaChevronRight,
+  FaStar, FaCalendarAlt
+} from 'react-icons/fa'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
 
 const Tuitions = () => {
-  const axiosSecure = useAxiosSecure() 
-  
-  // --- States ---
+  const axiosSecure = useAxiosSecure()
   const [search, setSearch] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [sort, setSort] = useState('newest')
-  const [page, setPage] = useState(1) // Current Page
-  const limit = 6 // Items per page
+  const [page, setPage] = useState(1)
+  const limit = 8 // Perfect for 4 cards per row (2 rows)
 
-  // --- Reset Page on Filter Change ---
-  // If user searches/filters, we must jump back to Page 1
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterClass, sort]);
+  // Reset page when filtering
+  useEffect(() => { setPage(1); }, [search, filterClass, sort]);
 
-  // --- Fetch Data ---
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['approved-tuitions', search, filterClass, sort, page],
     queryFn: async () => {
       const res = await axiosSecure.get(`/tuitions/status`, {
-          params: {
-              status: 'Approved',
-              search,
-              filterClass,
-              sort,
-              page,
-              limit
-          }
+        params: { status: 'Approved', search, filterClass, sort, page, limit }
       })
-      return res.data // Expecting: { tuitions: [], total: 0 }
+      return res.data
     },
-    keepPreviousData: true // Smooth transition between pages
+    keepPreviousData: true
   })
 
-  // Destructure data safely
   const tuitions = data?.tuitions || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  // --- Pagination Handlers ---
-  const handlePrev = () => {
-    if (page > 1) setPage(page - 1);
-  }
-
-  const handleNext = () => {
-    if (page < totalPages) setPage(page + 1);
-  }
-
   return (
-    <div className="min-h-screen bg-base-100 font-sans text-gray-800">
-      
-      {/* --- HERO SECTION --- */}
-      <div className="bg-primary/5 py-16 px-6">
+    <div className="min-h-screen bg-base-100 font-sans text-gray-800 pb-20">
+
+      {/* --- SEARCH & FILTER HERO --- */}
+      <div className="bg-primary/5 py-12 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <h4 className="text-primary font-bold uppercase tracking-widest text-sm mb-3">Find Your Job</h4>
-          <h1 className="text-4xl md:text-6xl font-display font-bold text-gray-900 mb-6">
-            Browse Available <span className="text-primary">Tuitions</span>
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-8">
+            Browse <span className="text-primary">Tuition</span> Jobs
           </h1>
-          
-          {/* Search & Filter Bar */}
-          <div className="bg-white p-4 rounded-2xl shadow-xl max-w-5xl mx-auto flex flex-col lg:flex-row gap-4 items-center border border-gray-100">
-            
-            {/* Search Input */}
-            <div className="flex-1 w-full relative">
-               <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-               <input 
-                 type="text" 
-                 placeholder="Search by subject or location..." 
-                 className="input input-bordered w-full pl-12 focus:outline-none focus:border-primary"
-                 onChange={(e) => setSearch(e.target.value)}
-                 value={search}
-               />
-            </div>
 
-            <div className="flex w-full lg:w-auto gap-4">
-                
-                {/* --- UPDATED CLASS FILTER --- */}
-                <select 
-                  className="select select-bordered w-full md:w-48 font-urbanist"
-                  onChange={(e) => setFilterClass(e.target.value)}
-                  value={filterClass}
-                >
-                  <option value="">All Classes</option>
-                  <option value="Class 6">Class 6</option>
-                  <option value="Class 7">Class 7</option>
-                  <option value="Class 8">Class 8</option>
-                  <option value="Class 9">Class 9</option>
-                  <option value="SSC / Class 10">SSC / Class 10</option>
-                  <option value="HSC 1st Year">HSC 1st Year</option>
-                  <option value="HSC 2nd Year">HSC 2nd Year</option>
-                  <option value="O Level">O Level</option>
-                  <option value="A Level">A Level</option>
-                </select>
+        <div className="bg-white dark:bg-neutral-900 p-3 rounded-2xl shadow-xl max-w-5xl mx-auto flex flex-col lg:flex-row gap-3 items-center border border-gray-100 dark:border-neutral-800 transition-colors duration-300">
+    
+    {/* Search Input Container */}
+    <div className="flex-1 w-full relative">
+        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+        <input
+            type="text"
+            placeholder="Search by subject, title or area..."
+            className="input input-bordered w-full pl-12 focus:border-primary bg-white dark:bg-neutral-800 dark:text-white dark:border-neutral-700 focus:outline-none"
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+        />
+    </div>
 
-                {/* Sort Dropdown */}
-                <div className="relative w-full md:w-48">
-                    <FaSortAmountDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none"/>
-                    <select 
-                        className="select select-bordered w-full pl-10 font-urbanist"
-                        onChange={(e) => setSort(e.target.value)}
-                        value={sort}
-                    >
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="salary_desc">Budget: High to Low</option>
-                        <option value="salary_asc">Budget: Low to High</option>
-                    </select>
-                </div>
-            </div>
-          </div>
+    {/* Filter Group */}
+    <div className="flex w-full lg:w-auto gap-3">
+        {/* Class Filter */}
+        <select 
+            className="select select-bordered w-full md:w-44 bg-white dark:bg-neutral-800 dark:text-white dark:border-neutral-700" 
+            onChange={(e) => setFilterClass(e.target.value)} 
+            value={filterClass}
+        >
+            <option value="" className="dark:bg-neutral-800">All Classes</option>
+            <option value="O Level" className="dark:bg-neutral-800">O Level</option>
+            <option value="A Level" className="dark:bg-neutral-800">A Level</option>
+            <option value="Class 10" className="dark:bg-neutral-800">Class 10</option>
+            <option value="Class 9" className="dark:bg-neutral-800">Class 9</option>
+        </select>
+
+        {/* Sort Filter */}
+        <select 
+            className="select select-bordered w-full md:w-44 bg-white dark:bg-neutral-800 dark:text-white dark:border-neutral-700" 
+            onChange={(e) => setSort(e.target.value)} 
+            value={sort}
+        >
+            <option value="newest" className="dark:bg-neutral-800">Newest First</option>
+            <option value="salary_desc" className="dark:bg-neutral-800">Highest Budget</option>
+            <option value="salary_asc" className="dark:bg-neutral-800">Lowest Budget</option>
+        </select>
+    </div>
+</div>
         </div>
       </div>
 
       {/* --- LISTING GRID --- */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        
-        {isLoading ? (
-           <div className="flex justify-center py-20">
-              <span className="loading loading-spinner loading-lg text-primary"></span>
-           </div>
-        ) : (
-          <>
-             {/* Results Count */}
-             <div className="mb-8 font-bold text-gray-500 font-urbanist flex justify-between items-center">
-                <span>
-                    Showing {tuitions.length} of {total} available jobs
-                    {total > 0 && <span className="ml-2 text-xs font-normal text-gray-400">(Page {page} of {totalPages})</span>}
-                </span>
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading ? (
+            // Skeleton Loader Grid (triggers while data is loading)
+            [...Array(limit)].map((_, i) => <SkeletonCard key={i} />)
+          ) : (
+            tuitions.map((item) => <TuitionCard key={item._id} item={item} />)
+          )}
+        </div>
 
-                {(search || filterClass || sort !== 'newest') && (
-                    <button 
-                        onClick={() => {setSearch(''); setFilterClass(''); setSort('newest')}}
-                        className="text-primary text-sm underline hover:text-primary-focus"
-                    >
-                        Reset Filters
-                    </button>
-                )}
-             </div>
+        {!isLoading && tuitions.length === 0 && (
+          <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 mt-10">
+            <p className="text-gray-400 font-bold text-xl">No tuition matches your current filters.</p>
+            <button onClick={() => { setSearch(''); setFilterClass('') }} className="btn btn-link text-primary">Clear all filters</button>
+          </div>
+        )}
 
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {tuitions.map((item) => (
-                 <TuitionCard key={item._id} item={item} />
-               ))}
-             </div>
-
-             {/* Empty State */}
-             {tuitions.length === 0 && (
-                <div className="text-center py-20 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
-                   <h3 className="text-xl font-bold text-gray-400">No tuitions found.</h3>
-                   <p className="text-gray-400 mt-2">Try adjusting your search or filters.</p>
-                </div>
-             )}
-
-             {/* --- PAGINATION CONTROLS --- */}
-             {/* {total > limit && ( */}
-                <div className="flex justify-center mt-12">
-                    <div className="join shadow-sm border border-base-200">
-                        <button 
-                            className="join-item btn btn-md bg-white hover:bg-gray-100" 
-                            onClick={handlePrev} 
-                            disabled={page === 1}
-                        >
-                            <FaChevronLeft />
-                        </button>
-                        
-                        {/* Generate Page Numbers */}
-                        {[...Array(totalPages)].map((_, index) => {
-                            const pageNum = index + 1;
-                            return (
-                                <button
-                                    key={pageNum}
-                                    onClick={() => setPage(pageNum)}
-                                    className={`join-item btn btn-md ${page === pageNum ? 'btn-primary text-white' : 'bg-white hover:bg-gray-100'}`}
-                                >
-                                    {pageNum}
-                                </button>
-                            );
-                        })}
-
-                        <button 
-                            className="join-item btn btn-md bg-white hover:bg-gray-100" 
-                            onClick={handleNext} 
-                            disabled={page === totalPages}
-                        >
-                            <FaChevronRight />
-                        </button>
-                    </div>
-                </div>
-             {/* )} */}
-          </>
+        {/* --- PAGINATION --- */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-16">
+            <div className="join shadow-sm border border-base-200">
+              <button className="join-item btn btn-md bg-white" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><FaChevronLeft /></button>
+              <button className="join-item btn btn-md bg-primary text-white border-primary">Page {page} of {totalPages}</button>
+              <button className="join-item btn btn-md bg-white" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><FaChevronRight /></button>
+            </div>
+          </div>
         )}
       </div>
-
     </div>
   )
 }
 
-/* --- REUSABLE CARD COMPONENT --- */
+
 const TuitionCard = ({ item }) => {
-  const gradients = [
-    "from-purple-500 to-indigo-600",
-    "from-blue-500 to-cyan-600",
-    "from-orange-500 to-red-600",
-    "from-emerald-500 to-teal-600"
-  ];
-  const gradientIndex = item._id ? item._id.charCodeAt(item._id.length - 1) % gradients.length : 0;
-  const selectedGradient = gradients[gradientIndex];
+  // Determine the cover image: Use the first image in the media array, 
+  // fall back to recruiterImage, or a generic placeholder.
+  const coverImage = item.media && item.media.length > 0
+    ? item.media[0]
+    : item.recruiterImage || "https://via.placeholder.com/400x225?text=No+Image+Available";
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full">
-       
-       <div className={`h-28 bg-gradient-to-r ${selectedGradient} relative p-5 flex flex-col justify-between`}>
-          <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold w-fit border border-white/30">
-             {item.class}
-          </span>
-          <h3 className="text-xl font-display font-bold text-white tracking-wide truncate">
-             {item.subject}
-          </h3>
-       </div>
+    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col h-full group">
 
-       <div className="p-5 flex-1 flex flex-col">
-          <div className="space-y-3 mb-6">
-             <div className="flex items-center gap-3 text-gray-600">
-                <FaMapMarkerAlt className="text-secondary" />
-                <span className="font-urbanist font-medium text-sm truncate">{item.location}</span>
-             </div>
-             <div className="flex items-center gap-3 text-gray-600">
-                <FaDollarSign className="text-primary" />
-                <span className="font-display font-bold text-gray-800 text-lg">
-                    ৳{item.budget} <span className="text-xs font-normal text-gray-400">/mo</span>
-                </span>
-             </div>
+      {/* Image Section */}
+      <div className="relative aspect-video overflow-hidden bg-gray-100">
+        <img
+          src={coverImage}
+          alt={item.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+
+        {/* Multi-image indicator badge (if more than 1 image exists) */}
+        {item.media?.length > 1 && (
+          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-md text-white px-2 py-1 rounded-lg text-[10px] flex items-center gap-1">
+            <FaImage size={10} /> +{item.media.length - 1}
           </div>
-          
-          <Link 
-             to={`/tuition/${item._id}`} 
-             className="btn btn-outline btn-primary btn-sm w-full mt-auto font-urbanist"
-          >
-             View Details <FaArrowRight />
-          </Link>
-       </div>
-    </div>
-  )
-}
+        )}
 
-export default Tuitions
+        {/* Class Tag Overlay */}
+        <div className="absolute top-3 left-3">
+          <span className="bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">
+            {item.class}
+          </span>
+        </div>
+
+        {/* Rating Overlay */}
+        <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 text-xs font-bold text-yellow-600 shadow-sm">
+          <FaStar size={10} /> 4.9
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-5 flex-1 flex flex-col">
+        <h3 className="text-lg font-display font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+          {item.title || `${item.subject} Tutor Needed`}
+        </h3>
+
+        <p className="text-gray-500 text-xs mb-4 line-clamp-2 italic leading-relaxed h-[32px]">
+          {item.description || "Looking for an experienced tutor to help with core concepts and exam preparation..."}
+        </p>
+
+        {/* Meta Info Grid */}
+        <div className="space-y-2 mb-6 text-sm text-gray-600 font-medium">
+          <div className="flex items-center gap-2">
+
+            <span className="truncate text-xs">{item.location}</span>
+          </div>
+          <div className="flex items-center gap-2">
+
+            <div className="flex items-center">
+              <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                {item.postedDate ? (
+                  new Date(item.postedDate).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                  })
+                ) : (
+                  "Just Now"
+                )}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 pt-1 border-t border-gray-50 mt-2">
+
+            <span className="text-gray-900 font-bold text-lg">
+              ৳{item.budget} <span className="text-[10px] text-gray-400 font-normal">/mo</span>
+            </span>
+          </div>
+        </div>
+
+        <Link
+          to={`/tuition/${item._id}`}
+          className="btn btn-primary btn-sm w-full rounded-xl text-white font-bold group-hover:shadow-lg transition-all"
+        >
+          View Details <FaArrowRight className="group-hover:translate-x-1 transition-transform ml-1" size={12} />
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+
+/* --- SKELETON CARD (Exact same layout as TuitionCard) --- */
+const SkeletonCard = () => (
+  <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden h-[410px] flex flex-col animate-pulse">
+    {/* Image Area */}
+    <div className="aspect-video bg-gray-200"></div>
+
+    {/* Content Area */}
+    <div className="p-5 flex-1 flex flex-col">
+      <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+      <div className="h-4 bg-gray-100 rounded w-full mb-2"></div>
+      <div className="h-4 bg-gray-100 rounded w-5/6 mb-4"></div>
+
+      <div className="mt-auto space-y-3">
+        <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-100 rounded w-1/3"></div>
+        <div className="h-10 bg-gray-200 rounded-xl w-full mt-2"></div>
+      </div>
+    </div>
+  </div>
+)
+
+export default Tuitions;
