@@ -15,7 +15,7 @@ React E-Tuition Platform is a full-stack MERN application that connects students
 
 # 📸 Preview
 
-![React E-Tuition Platform](./preview.png)
+![E-Tuition Platform Preview](./src/assets/banner/623681359-6f64352b-de43-45ed-8680-7f3ed4698787.png)
 
 ---
 
