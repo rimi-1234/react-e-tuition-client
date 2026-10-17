@@ -1,27 +1,11 @@
-import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router';
-import { Sun, Moon } from 'lucide-react'; // Using Lucide for nice icons
 import logo from '../../../assets/logo.png';
 import useAuth from '../../../hooks/useAuth';
+import ThemeToggle from '../ThemeToggle';
+import NotificationBell from './NotificationBell';
 
 const NavBar = () => {
     const { user, logOut } = useAuth();
-    
-    // 1. Initialize theme from localStorage or system preference
-    const [theme, setTheme] = useState(
-        localStorage.getItem("theme") || 
-        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    );
-
-    // 2. Update the 'data-theme' attribute on the HTML tag
-    useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme(prev => (prev === "light" ? "dark" : "light"));
-    };
 
     const handleLogOut = () => {
         logOut()
@@ -58,7 +42,7 @@ const NavBar = () => {
     };
 
     return (
-        <div className="navbar bg-base-100/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 px-4 md:px-8 transition-colors duration-300">
+        <div className="navbar sticky top-0 z-50 border-b border-base-300 bg-base-100/95 px-4 shadow-sm backdrop-blur-sm transition-colors duration-300 md:px-8">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden pl-0">
@@ -66,7 +50,7 @@ const NavBar = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
                         </svg>
                     </div>
-                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 gap-2">
+                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 w-52 gap-2 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow">
                         {navLinks}
                     </ul>
                 </div>
@@ -86,27 +70,17 @@ const NavBar = () => {
             </div>
 
             <div className="navbar-end gap-2 md:gap-3">
-                {/* --- THEME TOGGLE BUTTON --- */}
-                <button 
-                    onClick={toggleTheme} 
-                    className="btn btn-ghost btn-circle border border-base-200 hover:border-primary transition-all duration-300"
-                    title="Toggle Theme"
-                >
-                    {theme === "light" ? (
-                        <Moon size={20} className="text-slate-700" />
-                    ) : (
-                        <Sun size={20} className="text-yellow-400" />
-                    )}
-                </button>
+                <NotificationBell />
+                <ThemeToggle />
 
                 {user ? (
                     <div className="dropdown dropdown-end">
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border hover:border-primary transition">
                             <div className="w-10 rounded-full">
-                                <img alt="User Profile" src={user.photoURL || "https://i.ibb.co/2k0H4Rq/default-avatar.png"} />
+                                <img alt="User Profile" src={user.photoURL || "/images/portrait-1.jpg"} />
                             </div>
                         </div>
-                        <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200">
+                        <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-lg">
                             <li className="menu-title px-4 py-2 text-primary font-semibold">Hi, {user.displayName || "User"}</li>
                             <li><Link to={getDashboardPath()}>Dashboard</Link></li>
                             <li><Link to="/profile">Profile</Link></li>

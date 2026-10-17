@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo, memo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '../../hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     FaMapMarkerAlt, FaSearch, FaFilter, FaStar, 
     FaMoneyBillWave, FaRegCalendarAlt, FaChalkboardTeacher, FaTimes 
 } from 'react-icons/fa';
-import useAxiosSecure from '../../hooks/useAxiosSecure'; 
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { getTeacherPortrait } from '../../utils/teacherPortraits'; 
 
 // --- Constants (Easy to maintain) ---
 const SUBJECT_OPTIONS = ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'ICT'];
@@ -21,16 +23,20 @@ const Tutors = () => {
     const [filterLocation, setFilterLocation] = useState('');
     const [page, setPage] = useState(1);
 
+    // Debounce the search text so the API is only called 400 ms after the
+    // user stops typing, not on every single keystroke.
+    const debouncedSearch = useDebounce(search, 400);
+
     // Reset page to 1 when any filter changes
-    useEffect(() => { setPage(1); }, [search, filterSubject, filterLocation]);
+    useEffect(() => { setPage(1); }, [debouncedSearch, filterSubject, filterLocation]);
 
     // --- Data Fetching ---
     const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['tutors', search, filterSubject, filterLocation, page],
+        queryKey: ['tutors', debouncedSearch, filterSubject, filterLocation, page],
         queryFn: async () => {
             const res = await axiosSecure.get(`/users/tutors`, {
                 params: {
-                    search,
+                    search: debouncedSearch,
                     subject: filterSubject,
                     location: filterLocation,
                     page,
@@ -220,7 +226,6 @@ const TutorCard = memo(({ tutor }) => {
     // 1. Safe Data Extraction
     const {
         name = tutor.tutorName || "Anonymous Tutor",
-        image = tutor.tutorImage,
         subject = tutor.tuitionSubject || "General Science",
         location = tutor.tuitionLocation || "Online",
         experience = 0,
@@ -264,10 +269,13 @@ const TutorCard = memo(({ tutor }) => {
                     <div className="avatar">
                         <div className="w-16 h-16 rounded-full ring-2 ring-offset-2 ring-gray-100 overflow-hidden group-hover:ring-primary transition-all">
                             <img 
-                                src={image || "https://placehold.co/150?text=Tutor"} 
+                                src={getTeacherPortrait(tutor._id || name)} 
                                 alt={name} 
                                 className="object-cover w-full h-full"
-                                onError={(e) => { e.target.src = "https://placehold.co/150?text=No+Img"; }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/images/portrait-1.jpg';
+                                }}
                             />
                         </div>
                     </div>

@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    FaArrowRight, FaMapMarkerAlt, FaDollarSign, 
-    FaChalkboardTeacher, FaCalendarAlt, FaFilter 
+    FaArrowRight, FaMapMarkerAlt,
+    FaChalkboardTeacher, FaCalendarAlt, FaFilter
 } from 'react-icons/fa';
 
 const LatestTuitions = ({ tuitions = [], loading = false }) => {
@@ -183,13 +183,11 @@ const HomeTuitionCard = ({ item, index }) => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="min-w-[16px] text-primary text-sm">
-                            <FaDollarSign />
-                        </div>
+                        <div className="min-w-[16px] text-primary text-sm font-black">৳</div>
                         <div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase">Budget</p>
-                            <p className="text-base font-bold text-gray-900">
-                                ৳{Number(item.salary || item.budget).toLocaleString()} 
+                            <p className="text-[10px] text-base-content/50 font-bold uppercase">Budget</p>
+                            <p className="text-base font-bold text-base-content">
+                                ৳{Number(item.salary || item.budget).toLocaleString()}
                             </p>
                         </div>
                     </div>

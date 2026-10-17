@@ -51,7 +51,7 @@ const itemVariants = {
 
 const About = () => {
     return (
-        <div className="bg-white">
+        <div className="bg-base-200 text-base-content">
             
             {/* --- Hero Section --- */}
             <section className="relative py-20 lg:py-28 bg-gray-50 overflow-hidden">
@@ -92,9 +92,9 @@ const About = () => {
                     >
                         <div className="absolute -z-10 top-10 -left-10 w-full h-full bg-gray-200 rounded-2xl transform rotate-3" />
                         <img 
-                            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80" 
-                            alt="Team brainstorming session" 
-                            className="rounded-2xl shadow-xl w-full object-cover h-[400px] lg:h-[500px]"
+                            src="/images/lecture.jpg" 
+                            alt="A lecturer teaching a class" 
+                            className="h-[400px] w-full rounded-2xl object-cover shadow-xl lg:h-[500px]"
                         />
                         {/* Floating Badge */}
                         <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100 flex items-center gap-3">
@@ -175,7 +175,7 @@ const About = () => {
                                     Find a Tutor
                                 </button>
                             </Link>
-                            <Link to="/register">
+                            <Link to="/signup">
                                 <button className="btn bg-transparent border-white text-white hover:bg-white/10 font-bold px-8">
                                     Become a Tutor
                                 </button>

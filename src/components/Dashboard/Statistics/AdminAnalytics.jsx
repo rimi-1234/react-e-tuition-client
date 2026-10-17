@@ -84,25 +84,24 @@ const AdminAnalytics = () => {
 
             {/* 1. Stat Cards: Grid changes for responsiveness (1 col -> 2 cols -> 3 cols) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-                <div className="stat bg-white shadow-sm rounded-xl border border-gray-100 p-4 md:p-6">
+                <div className="stat rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm md:p-6">
                     <div className="stat-figure text-success"><FaWallet className="text-2xl md:text-3xl" /></div>
-                    <div className="stat-title font-bold text-gray-500 text-xs md:text-sm">Total Platform Earnings</div>
-                    <div className="stat-value text-success text-2xl md:text-4xl">৳ {totalRevenue.toLocaleString()}</div>
+                    <div className="stat-title text-xs font-bold text-base-content/60 md:text-sm">Total Platform Earnings</div>
+                    <div className="stat-value text-2xl text-success md:text-4xl">৳ {totalRevenue.toLocaleString()}</div>
                     <div className="stat-desc text-xs">All time revenue</div>
                 </div>
 
-                <div className="stat bg-white shadow-sm rounded-xl border border-gray-100 p-4 md:p-6">
+                <div className="stat rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm md:p-6">
                     <div className="stat-figure text-secondary"><FaExchangeAlt className="text-2xl md:text-3xl" /></div>
-                    <div className="stat-title font-bold text-gray-500 text-xs md:text-sm">Total Transactions</div>
-                    <div className="stat-value text-secondary text-2xl md:text-4xl">{totalTransactions}</div>
+                    <div className="stat-title text-xs font-bold text-base-content/60 md:text-sm">Total Transactions</div>
+                    <div className="stat-value text-2xl text-secondary md:text-4xl">{totalTransactions}</div>
                     <div className="stat-desc text-xs">Successful payments processed</div>
                 </div>
 
-                {/* On tablet (sm), this might span 2 cols if you want, or stay in grid flow */}
-                <div className="stat bg-white shadow-sm rounded-xl border border-gray-100 p-4 md:p-6 sm:col-span-2 lg:col-span-1">
+                <div className="stat rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm sm:col-span-2 md:p-6 lg:col-span-1">
                     <div className="stat-figure text-primary"><FaChartLine className="text-2xl md:text-3xl" /></div>
-                    <div className="stat-title font-bold text-gray-500 text-xs md:text-sm">Avg. Transaction Value</div>
-                    <div className="stat-value text-primary text-2xl md:text-4xl">
+                    <div className="stat-title text-xs font-bold text-base-content/60 md:text-sm">Avg. Transaction Value</div>
+                    <div className="stat-value text-2xl text-primary md:text-4xl">
                         ৳ {totalTransactions > 0 ? Math.round(totalRevenue / totalTransactions) : 0}
                     </div>
                     <div className="stat-desc text-xs">Per successful payment</div>
@@ -113,9 +112,9 @@ const AdminAnalytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
                 
                 {/* Revenue Trend Chart */}
-                <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="bg-base-100 p-4 md:p-6 rounded-xl shadow-sm border border-base-300">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-gray-700">Revenue Trends</h3>
+                        <h3 className="text-lg font-bold text-base-content">Revenue Trends</h3>
                     </div>
                     {/* Fixed height ensuring it doesn't collapse on mobile */}
                     <div className="h-[250px] md:h-[300px] w-full">
@@ -133,8 +132,8 @@ const AdminAnalytics = () => {
                 </div>
 
                 {/* Transaction Volume Chart */}
-                <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold mb-6 text-gray-700">Transaction Volume</h3>
+                <div className="bg-base-100 p-4 md:p-6 rounded-xl shadow-sm border border-base-300">
+                    <h3 className="text-lg font-bold mb-6 text-base-content">Transaction Volume</h3>
                     <div className="h-[250px] md:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
@@ -153,10 +152,10 @@ const AdminAnalytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
                 
                 {/* User Demographics */}
-                <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="bg-base-100 p-4 md:p-6 rounded-xl shadow-sm border border-base-300">
                     <div className="flex items-center gap-2 mb-6">
                         <FaUsers className="text-secondary" />
-                        <h3 className="text-lg font-bold text-gray-700">User Distribution</h3>
+                        <h3 className="text-lg font-bold text-base-content">User Distribution</h3>
                     </div>
                     <div className="h-[250px] md:h-[300px] w-full flex justify-center items-center">
                         <ResponsiveContainer width="100%" height="100%">
@@ -181,10 +180,10 @@ const AdminAnalytics = () => {
                 </div>
 
                 {/* Site Traffic (Area Chart) */}
-                <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="bg-base-100 p-4 md:p-6 rounded-xl shadow-sm border border-base-300">
                     <div className="flex items-center gap-2 mb-6">
                         <FaChartPie className="text-accent" />
-                        <h3 className="text-lg font-bold text-gray-700">Daily Activity</h3>
+                        <h3 className="text-lg font-bold text-base-content">Daily Activity</h3>
                     </div>
                     <div className="h-[250px] md:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -207,14 +206,14 @@ const AdminAnalytics = () => {
             </div>
 
             {/* 4. Transaction History Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-gray-700">Recent Transactions</h3>
+            <div className="bg-base-100 rounded-xl shadow-sm border border-base-300 overflow-hidden">
+                <div className="p-4 md:p-6 border-b border-base-300 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-base-content">Recent Transactions</h3>
                 </div>
                 {/* overflow-x-auto allows table to scroll on mobile */}
                 <div className="overflow-x-auto">
                     <table className="table w-full">
-                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <thead className="bg-base-200 text-base-content/70 uppercase text-xs">
                             <tr>
                                 <th>Date</th>
                                 <th>Payer</th>

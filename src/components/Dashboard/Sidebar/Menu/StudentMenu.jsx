@@ -2,6 +2,7 @@ import { BsFillHouseAddFill } from 'react-icons/bs'
 import { MdHomeWork, MdOutlineManageHistory } from 'react-icons/md'
 import MenuItem from './MenuItem'
 import { MdPayment } from 'react-icons/md';
+import { FaBookmark } from 'react-icons/fa';
 const StudentMenu = () => {
   return (
     <>
@@ -26,10 +27,15 @@ const StudentMenu = () => {
         address='applied-tutors'
       />
       <MenuItem
-    icon={MdPayment}
-    label='Payment History'
-    address='payment-history'
-/>
+        icon={MdPayment}
+        label='Payment History'
+        address='payment-history'
+      />
+      <MenuItem
+        icon={FaBookmark}
+        label='Saved Tuitions'
+        address='saved-tuitions'
+      />
     </>
   )
 }

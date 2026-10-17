@@ -1,12 +1,16 @@
 import { useNavigate } from 'react-router';
 import Button from '../components/Shared/Button/Button';
+import ThemeToggle from '../components/Shared/ThemeToggle';
 
 const ErrorPage = () => {
   const navigate = useNavigate();
 
   return (
-    <section className='bg-base-100'>
-      <div className='container flex items-center min-h-screen px-6 py-12 mx-auto'>
+    <section className='relative bg-base-200 text-base-content'>
+      <div className='absolute right-4 top-4'>
+        <ThemeToggle />
+      </div>
+      <div className='container mx-auto flex min-h-screen items-center px-6 py-12'>
         <div className='flex flex-col items-center max-w-sm mx-auto text-center'>
           
           {/* 1. Error Icon: Used 'text-secondary' (Pink) for the alert color */}

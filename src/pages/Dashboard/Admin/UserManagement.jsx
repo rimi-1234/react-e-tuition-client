@@ -1,9 +1,10 @@
 
 import { useQuery } from '@tanstack/react-query'
-import { FaTrashAlt, FaUserEdit, FaSearch, FaTimes } from 'react-icons/fa'
+import { FaTrashAlt, FaUserEdit, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import Swal from 'sweetalert2'
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 const UserManagement = () => {
   const axiosSecure = useAxiosSecure()
@@ -41,6 +42,18 @@ const UserManagement = () => {
       }
     })
   }
+
+  // FEATURE 4 – Toggle verified status for a tutor
+  const handleVerify = async (user) => {
+    const next = !user.verified;
+    try {
+      await axiosSecure.patch(`/users/verify-tutor/${user._id}`, { verified: next });
+      refetch();
+      toast.success(next ? `${user.name} is now verified.` : `Verification removed from ${user.name}.`);
+    } catch {
+      toast.error('Could not update verification status');
+    }
+  };
 
   // 3. Handle Delete User
   const handleDeleteUser = (user) => {
@@ -83,6 +96,7 @@ const UserManagement = () => {
               <th>User Profile</th>
               <th>Role (Access Level)</th>
               <th>Update Info</th>
+              <th className="text-center">Verify</th>
               <th className="text-center">Delete</th>
             </tr>
           </thead>
@@ -128,11 +142,26 @@ const UserManagement = () => {
                    <EditUserModal user={user} axiosSecure={axiosSecure} refetch={refetch} />
                 </td>
 
+                {/* Verify Button (FEATURE 4) */}
+                <td className="text-center">
+                  {user.role === 'Tutor' ? (
+                    <button
+                      onClick={() => handleVerify(user)}
+                      title={user.verified ? 'Remove verification' : 'Mark as verified'}
+                      className={`btn btn-sm btn-ghost ${user.verified ? 'text-success' : 'text-base-content/40'}`}
+                    >
+                      {user.verified ? <FaCheckCircle /> : <FaTimesCircle />}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-base-content/30">—</span>
+                  )}
+                </td>
+
                 {/* Delete Button */}
                 <td className="text-center">
-                  <button 
-                    onClick={() => handleDeleteUser(user)} 
-                    className="btn btn-sm btn-square btn-ghost text-red-500 hover:bg-red-50"
+                  <button
+                    onClick={() => handleDeleteUser(user)}
+                    className="btn btn-sm btn-square btn-ghost text-error hover:bg-error/10"
                   >
                     <FaTrashAlt />
                   </button>

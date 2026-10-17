@@ -21,12 +21,12 @@ import AdminMenu from './Menu/AdminMenu'
 import useRole from '../../../hooks/useRole'
 import useAuth from '../../../hooks/useAuth'
 import MenuItem from './Menu/MenuItem'
+import ThemeToggle from '../../Shared/ThemeToggle'
 
 const Sidebar = () => {
   const { logOut } = useAuth()
   const [isActive, setActive] = useState(false)
   const [role, isLoading] = useRole()
-  console.log(role);
 
 
   const handleToggle = () => {
@@ -41,19 +41,22 @@ const Sidebar = () => {
   return (
     <>
       {/* Small Screen Navbar */}
-      <div className='bg-white text-gray-800 flex justify-between md:hidden border-b border-indigo-100'>
+      <div className='flex items-center justify-between border-b border-base-300 bg-base-100 text-base-content md:hidden'>
         <div>
           <div className='block cursor-pointer p-4 font-bold'>
             <Link to='/' className='flex items-center gap-2'>
               <img src={logo} alt='Logo' className='w-8 h-8 rounded-full object-cover' />
-              <span className='text-lg font-bold text-indigo-700 uppercase'>Edurock</span>
+              <span className='text-lg font-bold uppercase text-primary'>Edurock</span>
             </Link>
           </div>
         </div>
 
-        <button onClick={handleToggle} className='mobile-menu-button p-4 focus:outline-none hover:bg-indigo-50 transition'>
-          <AiOutlineBars className='h-5 w-5 text-indigo-600' />
-        </button>
+        <div className='flex items-center gap-1 pr-2'>
+          <ThemeToggle />
+          <button onClick={handleToggle} className='mobile-menu-button p-4 transition hover:bg-base-200 focus:outline-none'>
+            <AiOutlineBars className='h-5 w-5 text-primary' />
+          </button>
+        </div>
       </div>
 
       {/* Sidebar Container */}
@@ -65,15 +68,15 @@ const Sidebar = () => {
             exit='hidden'
             variants={sidebarVariants}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={`z-10 md:fixed flex flex-col justify-between overflow-x-hidden bg-white w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform md:translate-x-0 border-r border-indigo-100`}
+            className={`absolute inset-y-0 left-0 z-10 flex w-64 transform flex-col justify-between space-y-6 overflow-x-hidden border-r border-base-300 bg-base-100 px-2 py-4 text-base-content md:fixed md:translate-x-0`}
           >
             <div className='flex flex-col h-full'>
 
               {/* Logo */}
-              <div className='w-full hidden md:flex px-4 py-4 shadow-sm rounded-xl justify-center items-center bg-indigo-50 mx-auto mt-2'>
+              <div className='mx-auto mt-2 hidden w-full items-center justify-center rounded-xl bg-base-200 px-4 py-4 shadow-sm md:flex'>
                 <Link to='/' className='flex items-center gap-2'>
-                  <img src={logo} alt='Logo' className='w-10 h-10 rounded-full object-cover' />
-                  <span className='text-xl font-bold text-indigo-700 uppercase tracking-wider'>TutorBoom</span>
+                  <img src={logo} alt='Logo' className='h-10 w-10 rounded-full object-cover' />
+                  <span className='text-xl font-bold uppercase tracking-wider text-primary'>Edurock</span>
                 </Link>
               </div>
 
@@ -105,9 +108,12 @@ const Sidebar = () => {
 
               {/* Footer */}
               <div>
-                <hr className='border-gray-200' />
+                <div className='mb-4 hidden px-2 md:block'>
+                  <ThemeToggle className='w-full' />
+                </div>
+                <hr className='border-base-300' />
                 <MenuItem icon={FcSettings} label='Profile' address='/dashboard/profile' />
-                <button onClick={logOut} className='flex cursor-pointer w-full items-center px-4 py-2 mt-5 text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-300 transform rounded-md'>
+                <button onClick={logOut} className='mt-5 flex w-full cursor-pointer items-center rounded-md px-4 py-2 text-base-content transition-colors duration-300 hover:bg-base-200 hover:text-primary'>
                   <GrLogout className='w-5 h-5' />
                   <span className='mx-4 font-medium'>Logout</span>
                 </button>

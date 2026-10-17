@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 import { TbFidgetSpinner } from 'react-icons/tb';
 
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import ThemeToggle from '../../components/Shared/ThemeToggle';
 import SocialLogin from '../SocialLogin/SocialLogin';
 
 const Register = () => {
@@ -50,45 +51,36 @@ const Register = () => {
 
       const dbRes = await axiosSecure.post('/users', userInfo);
 
-      if (dbRes.data.insertedId || dbRes.data.upsertedId || dbRes.data.userId) {
-        Swal.fire({
-          title: "Welcome!",
-          text: "Registration successful.",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false
-        });
-        navigate(location.state || '/');
+      if (dbRes.data.userId) {
+        toast.success('Welcome! Registration successful.');
+        navigate('/dashboard', { replace: true });
       }
 
     } catch (error) {
-      console.error(error);
-      let errorMsg = error.message || "Something went wrong.";
-      if (error.code === "auth/email-already-in-use") {
-        errorMsg = "This email is already registered.";
+      let errorMsg = error.message || 'Something went wrong.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMsg = 'This email is already registered.';
       }
-      Swal.fire({
-        title: "Registration Failed",
-        text: errorMsg,
-        icon: "error",
-        confirmButtonColor: "#EF4444" // red-500
-      });
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen bg-base-100 font-body text-base-content py-10'>
-      <div className='w-full max-w-2xl p-6 sm:p-10 bg-white rounded-2xl shadow-xl border border-primary/10'>
+    <div className='relative flex min-h-screen items-center justify-center bg-base-200 py-10 font-body text-base-content'>
+      <div className='absolute right-4 top-4'>
+        <ThemeToggle />
+      </div>
+      <div className='w-full max-w-2xl rounded-2xl border border-base-300 bg-base-100 p-6 text-base-content shadow-xl sm:p-10'>
         
         {/* Header */}
         <div className='mb-8 text-center'>
-          <h1 className='text-4xl font-bold font-display text-gray-900'>
+          <h1 className='text-4xl font-bold font-display text-base-content'>
             Create Account
           </h1>
-          <p className='text-sm text-gray-500 mt-2'>
-            Join Zap Shift to start your journey
+          <p className='text-sm text-base-content/60 mt-2'>
+            Join to start your journey
           </p>
         </div>
 
@@ -100,52 +92,52 @@ const Register = () => {
             {/* Name */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">Full Name</span>
+                <span className="label-text font-medium">Full Name</span>
               </label>
               <input 
                 type="text" 
                 placeholder="John Doe" 
-                className="input input-bordered w-full focus:input-primary bg-gray-50" 
+                className="input input-bordered w-full focus:input-primary" 
                 {...register('name', { required: true })} 
               />
-              {errors.name && <span className='text-red-500 text-xs mt-1'>Name is required.</span>}
+              {errors.name && <span className='text-error text-xs mt-1'>Name is required.</span>}
             </div>
 
             {/* Email */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">Email Address</span>
+                <span className="label-text font-medium">Email Address</span>
               </label>
               <input 
                 type="email" 
                 placeholder="email@example.com" 
-                className="input input-bordered w-full focus:input-primary bg-gray-50" 
+                className="input input-bordered w-full focus:input-primary" 
                 {...register('email', { required: true })} 
               />
-              {errors.email && <span className='text-red-500 text-xs mt-1'>Email is required.</span>}
+              {errors.email && <span className='text-error text-xs mt-1'>Email is required.</span>}
             </div>
 
             {/* Phone */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">Phone Number</span>
+                <span className="label-text font-medium">Phone Number</span>
               </label>
               <input 
                 type="tel" 
                 placeholder="+880..." 
-                className="input input-bordered w-full focus:input-primary bg-gray-50" 
+                className="input input-bordered w-full focus:input-primary" 
                 {...register('phone', { required: true })} 
               />
-              {errors.phone && <span className='text-red-500 text-xs mt-1'>Phone is required.</span>}
+              {errors.phone && <span className='text-error text-xs mt-1'>Phone is required.</span>}
             </div>
 
             {/* Role */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">I am a...</span>
+                <span className="label-text font-medium">I am a…</span>
               </label>
               <select 
-                className="select select-bordered w-full focus:select-primary bg-gray-50"
+                className="select select-bordered w-full focus:select-primary"
                 defaultValue=""
                 {...register('role', { required: true })}
               >
@@ -153,41 +145,41 @@ const Register = () => {
                 <option value="Student">Student</option>
                 <option value="Tutor">Tutor</option>
               </select>
-              {errors.role && <span className='text-red-500 text-xs mt-1'>Role is required.</span>}
+              {errors.role && <span className='text-error text-xs mt-1'>Role is required.</span>}
             </div>
 
-            {/* Photo Upload - Spans full width on mobile, half on desktop */}
+            {/* Photo Upload */}
             <div className="form-control md:col-span-2">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">Profile Picture</span>
+                <span className="label-text font-medium">Profile Picture</span>
               </label>
               <input 
                 type="file" 
-                className="file-input file-input-bordered file-input-primary w-full bg-gray-50" 
+                className="file-input file-input-bordered file-input-primary w-full" 
                 {...register('photo', { required: true })} 
               />
-              {errors.photo && <span className='text-red-500 text-xs mt-1'>Photo is required.</span>}
+              {errors.photo && <span className='text-error text-xs mt-1'>Photo is required.</span>}
             </div>
 
-            {/* Password - Spans full width */}
+            {/* Password */}
             <div className="form-control md:col-span-2">
               <label className="label">
-                <span className="label-text font-medium text-gray-600">Password</span>
+                <span className="label-text font-medium">Password</span>
               </label>
               <input 
                 type="password" 
                 placeholder="Create a strong password" 
-                className="input input-bordered w-full focus:input-primary bg-gray-50" 
+                className="input input-bordered w-full focus:input-primary" 
                 {...register('password', {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Must be 6+ characters" },
+                  required: 'Password is required',
+                  minLength: { value: 6, message: 'Must be 6+ characters' },
                   pattern: {
                     value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                    message: "Must contain Uppercase, Lowercase, Number, and Special Char"
+                    message: 'Must contain Uppercase, Lowercase, Number, and Special Char'
                   }
                 })} 
               />
-              {errors.password && <span className='text-red-500 text-xs mt-1'>{errors.password.message}</span>}
+              {errors.password && <span className='text-error text-xs mt-1'>{errors.password.message}</span>}
             </div>
 
           </div>
@@ -210,11 +202,9 @@ const Register = () => {
 
         {/* Divider */}
         <div className='flex items-center pt-6 space-x-1'>
-          <div className='flex-1 h-px bg-gray-200'></div>
-          <p className='px-3 text-sm text-gray-400 font-urbanist'>
-            Or register with
-          </p>
-          <div className='flex-1 h-px bg-gray-200'></div>
+          <div className='flex-1 h-px bg-base-300'></div>
+          <p className='px-3 text-sm text-base-content/50'>Or register with</p>
+          <div className='flex-1 h-px bg-base-300'></div>
         </div>
 
         {/* Social Login */}
@@ -223,11 +213,11 @@ const Register = () => {
         </div>
 
         {/* Footer Link */}
-        <p className='mt-6 text-sm text-center text-gray-500'>
+        <p className='mt-6 text-sm text-center text-base-content/60'>
           Already have an account?{' '}
           <Link 
             to="/login" 
-            className='font-bold text-primary hover:text-secondary hover:underline transition-colors'
+            className='font-bold text-primary hover:underline transition-colors'
           >
             Log in
           </Link>

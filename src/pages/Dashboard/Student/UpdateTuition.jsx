@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router' // CORRECTED: 'react-router' -> 'react-router-dom'
-import { FaBook, FaMapMarkerAlt, FaDollarSign, FaChalkboardTeacher, FaSave } from 'react-icons/fa'
+import { FaBook, FaMapMarkerAlt, FaChalkboardTeacher, FaSave } from 'react-icons/fa'
 import Swal from 'sweetalert2'
 import useAuth from '../../../hooks/useAuth' 
 import useAxiosSecure from '../../../hooks/useAxiosSecure' 
@@ -164,13 +164,13 @@ const UpdateTuition = () => {
                                     <span className="label-text font-bold font-urbanist">Salary / Budget</span>
                                 </label>
                                 <div className="relative">
-                                    <FaDollarSign className="absolute left-3 top-3.5 text-gray-400" />
+                                    <span className="absolute left-3 top-3 text-base font-black text-success">৳</span>
                                     <input
                                         type="number"
                                         name="salary"
-                                        defaultValue={tuitionData.salary}
+                                        defaultValue={tuitionData.salary || tuitionData.budget}
                                         placeholder="e.g. 5000"
-                                        className="input input-bordered w-full pl-10 focus:border-primary focus:outline-none"
+                                        className="input input-bordered w-full pl-8 focus:border-primary focus:outline-none"
                                         required
                                     />
                                 </div>

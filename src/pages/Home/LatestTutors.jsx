@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { 
     FaStar, FaMapMarkerAlt, FaChalkboardTeacher, 
-    FaArrowRight, FaMoneyBillWave 
+    FaArrowRight, FaMoneyBillWave, FaCheckCircle 
 } from 'react-icons/fa';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { getTeacherPortrait } from '../../utils/teacherPortraits';
 
 const LatestTutors = () => {
     const axiosPublic = useAxiosSecure();
@@ -113,12 +114,12 @@ const LatestTutors = () => {
 // --- Card Component ---
 const HomeTutorCard = ({ tutor, index }) => {
     const {
-        tutorName,       
-        tutorImage,      
-        tuitionSubject,  
-        tuitionLocation, 
-        experience,      
-        expectedSalary,  
+        tutorName,
+        tuitionSubject,
+        tuitionLocation,
+        experience,
+        expectedSalary,
+        verified,
     } = tutor;
 
     const rating = 4.8; 
@@ -139,20 +140,39 @@ const HomeTutorCard = ({ tutor, index }) => {
                 </div>
 
                 <div className="flex items-center gap-4 mb-4">
-                    <div className="avatar">
-                        <div className="w-16 h-16 rounded-full ring-2 ring-offset-2 ring-gray-100 overflow-hidden group-hover:ring-primary transition-all">
-                            <img 
-                                src={tutorImage || "https://i.ibb.co/mJ9rwdJ/user.png"} 
-                                alt={tutorName} 
+                    <div className="avatar relative">
+                        <div className="w-16 h-16 rounded-full ring-2 ring-offset-2 ring-base-300 overflow-hidden group-hover:ring-primary transition-all">
+                            <img
+                                src={getTeacherPortrait(tutor._id || index)}
+                                alt={tutorName}
                                 className="object-cover w-full h-full"
-                                onError={(e) => { e.target.src = "https://placehold.co/150?text=No+Img"; }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/images/portrait-1.jpg';
+                                }}
                             />
                         </div>
+                        {/* FEATURE 4 – Verified badge on the avatar */}
+                        {verified && (
+                            <span
+                                title="Verified tutor"
+                                className="absolute -bottom-1 -right-1 rounded-full bg-base-100 p-0.5"
+                            >
+                                <FaCheckCircle className="text-primary text-sm" />
+                            </span>
+                        )}
                     </div>
                     <div>
-                        <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
-                            {tutorName}
-                        </h3>
+                        <div className="flex items-center gap-1">
+                            <h3 className="font-bold text-base-content line-clamp-1 group-hover:text-primary transition-colors">
+                                {tutorName}
+                            </h3>
+                            {verified && (
+                                <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/20 whitespace-nowrap">
+                                    ✓ Verified
+                                </span>
+                            )}
+                        </div>
                         <span className="text-xs font-semibold text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
                             {tuitionSubject}
                         </span>

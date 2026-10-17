@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router' // Fixed 'react-router' to 'react-router-dom'
-import { FaMapMarkerAlt, FaEdit, FaTrash, FaEye, FaDollarSign } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaEdit, FaTrash, FaEye } from 'react-icons/fa'
 import Swal from 'sweetalert2'
 import useAuth from '../../../hooks/useAuth'
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
@@ -102,7 +102,7 @@ const MyTuitions = () => {
                 </td>
                 <td>
                   <div className="flex items-center gap-1 font-bold text-primary">
-                    <FaDollarSign /> {item.budget}
+                    ৳{item.budget}
                   </div>
                 </td>
                 <td>
@@ -157,10 +157,8 @@ const MyTuitions = () => {
                   <span className="text-sm">{item.location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-base-content font-bold">
-                  <div className="p-2 bg-primary/10 rounded-full text-primary">
-                    <FaDollarSign className="w-3 h-3" />
-                  </div>
-                  <span>{item.salary} /month</span>
+                  <div className="p-2 bg-primary/10 rounded-full text-primary font-black text-sm">৳</div>
+                  <span>৳{item.budget || item.salary} /month</span>
                 </div>
               </div>
 

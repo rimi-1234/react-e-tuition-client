@@ -9,7 +9,7 @@ const SuccessStories = () => {
             result: "From Grade 4 to Grade 9",
             subject: "GCSE Mathematics",
             quote: "I used to be terrified of Calculus. My tutor broke it down into simple steps that actually made sense. I couldn't have hit my target without them.",
-            avatar: "https://i.pravatar.cc/150?u=arjun",
+            avatar: "/images/portrait-1.jpg",
             badgeColor: "bg-blue-100 text-blue-600"
         },
         {
@@ -18,7 +18,7 @@ const SuccessStories = () => {
             result: "11+ Exam Success",
             subject: "English & Verbal Reasoning",
             quote: "The personalized attention Sarah received was incredible. Her confidence soared, and she secured a spot at her first-choice grammar school!",
-            avatar: "https://i.pravatar.cc/150?u=sarah",
+            avatar: "/images/portrait-2.jpg",
             badgeColor: "bg-green-100 text-green-600"
         },
         {
@@ -27,7 +27,7 @@ const SuccessStories = () => {
             result: "Accepted to Oxford",
             subject: "Physics & PAT Prep",
             quote: "The interview prep was the most valuable part. My tutor had actually been through the process and knew exactly what the professors look for.",
-            avatar: "https://i.pravatar.cc/150?u=james",
+            avatar: "/images/portrait-3.jpg",
             badgeColor: "bg-purple-100 text-purple-600"
         }
     ];
@@ -49,7 +49,7 @@ const SuccessStories = () => {
                         <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
                             <div className="flex -space-x-3">
                                 {[1, 2, 3, 4].map((i) => (
-                                    <img key={i} className="w-10 h-10 rounded-full border-2 border-white" src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" />
+                                    <img key={i} className="h-10 w-10 rounded-full border-2 border-base-100 object-cover" src={`/images/portrait-${(i % 3) + 1}.jpg`} alt="" />
                                 ))}
                             </div>
                             <div className="text-sm">

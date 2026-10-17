@@ -2,6 +2,7 @@ import Home from '../pages/Home/Home'
 import ErrorPage from '../pages/ErrorPage'
 import Login from '../pages/Login/Login'
 import SignUp from '../pages/SignUp/SignUp'
+// ErrorPage is reused as the error boundary for the dashboard route tree too
 
 import PrivateRoute from './PrivateRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
@@ -31,6 +32,7 @@ import Dashboard from '../pages/Dashboard/Common/Dashboard'
 import OngoingTuitions from '../pages/Dashboard/Tutor/OngoingTuitions'
 import About from '../pages/Home/About'
 import Contact from '../pages/Home/Contact'
+import SavedTuitions from '../pages/Dashboard/Student/SavedTuitions'
 
 
 export const router = createBrowserRouter([
@@ -83,6 +85,7 @@ export const router = createBrowserRouter([
         <DashboardLayout />
       </PrivateRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -130,6 +133,14 @@ export const router = createBrowserRouter([
         element: (
           <StudentRoute>
             <PaymentHistory />
+          </StudentRoute>
+        )
+      },
+      {
+        path: 'saved-tuitions',
+        element: (
+          <StudentRoute>
+            <SavedTuitions />
           </StudentRoute>
         )
       },

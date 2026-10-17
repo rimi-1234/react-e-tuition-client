@@ -54,53 +54,61 @@ The **React E-Tuition Platform** was built to solve the inefficiency of finding 
 
 ---
 
-## 🚀 Run Locally
+## Theme
 
-Follow these steps to run the project on your local machine.
+The theme control is in the navbar, dashboard sidebar, login, and sign up. Light and dark are saved in the browser. If you have not chosen one, the app follows the device theme and updates when the device theme changes. Refresh and in-app navigation keep the same choice.
 
-### 1. Clone the Repository
+## Modern features to choose
+
+See [MODERN_FEATURES.md](../MODERN_FEATURES.md) for features that are not built yet. Check the ones you want implemented.
+
+## Run locally
+
+### Backend
+
 ```bash
-git clone [https://github.com/rimi-1234/react-e-tuition-client.git](https://github.com/rimi-1234/react-e-tuition-client.git)
-2. Backend Setup
-Navigate to the server folder and install dependencies:
-
-Bash
-
 cd backend
 npm install
-Create a .env file in the backend folder with your credentials:
+```
 
-Code snippet
+Copy `backend/.env.example` to `backend/.env` and fill in MongoDB, Stripe, Firebase Admin, and `CLIENT_URL`. Then:
 
-PORT=5000
-DB_USER=your_mongodb_username
-DB_PASS=your_mongodb_password
-ACCESS_TOKEN_SECRET=your_jwt_secret
-STRIPE_SECRET_KEY=your_stripe_secret_key
-CLIENT_URL=http://localhost:5173
-Start the server:
-
-Bash
-
-npm start
-3. Frontend Setup
-Navigate to the client folder and install dependencies:
-
-Bash
-
-cd client
-npm install
-Create a .env.local file in the client folder:
-
-Code snippet
-
-VITE_apiKey=your_firebase_api_key
-VITE_authDomain=your_firebase_auth_domain
-VITE_projectId=your_firebase_project_id
-VITE_API_URL=http://localhost:5000
-VITE_STRIPE_PUBLIC_KEY=your_stripe_publishable_key
-Start the client:
-
-Bash
-
+```bash
 npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL` to the API origin, for example `http://localhost:3000`. Then:
+
+```bash
+npm run dev
+```
+
+## Deploy
+
+### Frontend on Vercel
+
+1. Import this repository in Vercel.
+2. Set the root directory to `frontend`.
+3. Framework preset: Vite. Build command: `npm run build`. Output directory: `dist`.
+4. Add `VITE_API_URL` (your Render or Vercel API origin) and `VITE_IMAGE_HOST_KEY`.
+5. `frontend/vercel.json` rewrites client routes to the app so refresh works on `/tutors`, `/dashboard`, and other paths.
+
+### API on Render
+
+1. Create a Web Service with root directory `backend`.
+2. Build command: `npm install`. Start command: `npm start`.
+3. Health check path: `/health`.
+4. Set `MONGO_USER`, `MONGO_PASS`, `STRIPE_SECRET_KEY`, `FB_SERVICE_KEY`, and `CLIENT_URL` (the Vercel site URL).
+
+`render.yaml` in the repository root is the same service as a Blueprint.
+
+### API on Vercel
+
+Create a second Vercel project with root directory `backend`. `backend/vercel.json` routes requests to the Express app. Set the same environment variables as Render, and allow MongoDB Atlas connections from anywhere (`0.0.0.0/0`) because Vercel does not use a fixed IP. Set `CLIENT_URL` to the frontend origin so Stripe return URLs and CORS match that site.

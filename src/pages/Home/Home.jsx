@@ -110,21 +110,20 @@ const { data: latestPosts = [], isLoading: loadingPosts } = useQuery({
                     >
                         <div className="relative z-10">
                             <img 
-                                src="https://img.freepik.com/free-photo/happy-student-with-graduation-hat-diploma_23-2147694703.jpg" 
-                                className="rounded-3xl shadow-2xl w-full object-cover transform rotate-2 hover:rotate-0 transition-transform duration-500"
-                                alt="Happy Student" 
+                                src="/images/tutor-session.jpg" 
+                                className="w-full rounded-3xl object-cover shadow-2xl transition-transform duration-500 rotate-2 hover:rotate-0 h-[420px]"
+                                alt="A tutor working with a student" 
                             />
-                            {/* Floating Stats Card */}
-                            <div className="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl border border-gray-100 animate-bounce-slow hidden md:block">
+                            <div className="absolute -bottom-8 -left-8 hidden rounded-2xl border border-base-300 bg-base-100 p-6 text-base-content shadow-xl md:block">
                                 <div className="flex items-center gap-4">
                                     <div className="avatar-group -space-x-4">
-                                        <div className="avatar w-12 border-2 border-white"><div className="w-12"><img src="https://i.pravatar.cc/100?img=1" alt="Avatar 1"/></div></div>
-                                        <div className="avatar w-12 border-2 border-white"><div className="w-12"><img src="https://i.pravatar.cc/100?img=2" alt="Avatar 2"/></div></div>
-                                        <div className="avatar w-12 border-2 border-white"><div className="w-12"><img src="https://i.pravatar.cc/100?img=3" alt="Avatar 3"/></div></div>
+                                        <div className="avatar w-12 border-2 border-base-100"><div className="w-12"><img src="/images/portrait-1.jpg" alt=""/></div></div>
+                                        <div className="avatar w-12 border-2 border-base-100"><div className="w-12"><img src="/images/portrait-2.jpg" alt=""/></div></div>
+                                        <div className="avatar w-12 border-2 border-base-100"><div className="w-12"><img src="/images/portrait-3.jpg" alt=""/></div></div>
                                     </div>
                                     <div>
-                                        <div className="text-2xl font-bold text-gray-800">5k+</div>
-                                        <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">Active Tutors</div>
+                                        <div className="text-2xl font-bold text-base-content">5k+</div>
+                                        <div className="text-xs font-bold uppercase tracking-wide text-base-content/60">Active Tutors</div>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +164,7 @@ const { data: latestPosts = [], isLoading: loadingPosts } = useQuery({
                             { icon: FaChalkboardTeacher, title: "Get Connected", desc: "Qualified tutors apply to your post. Review profiles.", color: "text-purple-500", bg: "bg-purple-50" },
                             { icon: FaUserCheck, title: "Hire & Learn", desc: "Select the best match and start learning securely.", color: "text-green-500", bg: "bg-green-50" }
                         ].map((step, idx) => (
-                            <motion.div key={idx} variants={fadeInUp} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                            <motion.div key={idx} variants={fadeInUp} className="group rounded-2xl border border-base-300 bg-base-100 p-8 text-base-content shadow-sm transition-all duration-300 hover:shadow-xl">
                                 <div className={`w-20 h-20 mx-auto ${step.bg} rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                                     <step.icon className={`text-3xl ${step.color}`} />
                                 </div>

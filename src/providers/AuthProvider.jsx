@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithCustomToken,
   signOut,
   updateProfile,
 } from 'firebase/auth'
@@ -34,6 +35,11 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, googleProvider)
   }
 
+  const signInWithDemo = (customToken) => {
+    setLoading(true)
+    return signInWithCustomToken(auth, customToken)
+  }
+
   const logOut = async () => {
     setLoading(true)
     return signOut(auth)
@@ -49,7 +55,6 @@ const AuthProvider = ({ children }) => {
   // onAuthStateChange
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async currentUser => {
-      console.log('CurrentUser-->', currentUser)
       setUser(currentUser)
       setLoading(false)
     })
@@ -66,6 +71,7 @@ const AuthProvider = ({ children }) => {
     createUser,
     signIn,
     signInWithGoogle,
+    signInWithDemo,
     logOut,
     updateUserProfile,
   }

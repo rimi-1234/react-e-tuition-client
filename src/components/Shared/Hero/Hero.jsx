@@ -54,7 +54,7 @@ const Hero = () => {
   return (
     <>
       {/* --- Hero Section --- */}
-      <section className="relative w-full bg-background-dark text-white overflow-hidden h-[70vh] flex items-center pt-20 pb-32 px-6 md:px-12 lg:px-24 rounded-b-[3rem] mx-auto max-w-[99%] mt-2 shadow-2xl">
+      <section className="relative mx-auto mt-2 flex min-h-[70vh] w-full max-w-[99%] items-center overflow-hidden rounded-b-[3rem] bg-gradient-to-br from-violet-50 via-white to-rose-50 px-6 pb-16 pt-16 text-base-content shadow-2xl dark:from-[#0B0B24] dark:via-[#14142e] dark:to-[#241433] dark:text-white md:px-12 md:pt-20 lg:px-24">
 
         {/* --- Background Elements --- */}
         <div className="absolute top-20 left-10 w-4 h-4 border-2 border-primary rotate-45 opacity-60 animate-pulse"></div>
@@ -108,7 +108,7 @@ const Hero = () => {
             </motion.h1>
 
             {/* --- Steps --- */}
-            <motion.div variants={fadeUpVariant} initial="hidden" animate="visible" custom={0.3} className="space-y-3 md:space-y-4 text-gray-300 text-sm md:text-base">
+            <motion.div variants={fadeUpVariant} initial="hidden" animate="visible" custom={0.3} className="space-y-3 text-sm text-base-content/80 dark:text-gray-200 md:space-y-4 md:text-base">
               <p className="flex items-center gap-2 md:gap-3">
                 <span className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-[0.6rem] md:text-sm font-bold shadow-md">1</span>
                 Student posts a tuition requirement.
@@ -131,7 +131,7 @@ const Hero = () => {
   >
     Find a Tuition
   </Link>
-              <Link to="/about" className="flex items-center gap-1 md:gap-2 text-white font-medium hover:text-primary transition group text-sm md:text-base">
+              <Link to="/about" className="group flex items-center gap-1 text-sm font-medium text-base-content transition hover:text-primary dark:text-white md:gap-2 md:text-base">
                 How it Works <span className="group-hover:translate-x-1 transition">→</span>
               </Link>
             </motion.div>
@@ -149,12 +149,12 @@ const Hero = () => {
                   variants={imageVariant}
                   initial="hidden"
                   animate="visible"
-                  className="relative z-10 overflow-hidden bg-[#FDF6E9] rounded-bl-[4rem] rounded-tr-[4rem] rounded-tl-3xl rounded-br-3xl shadow-2xl border-[6px] border-white/10 h-[250px] lg:h-[350px] flex items-end justify-center"
+                  className="relative z-10 flex h-[280px] items-end justify-center overflow-hidden rounded-bl-[4rem] rounded-br-3xl rounded-tl-3xl rounded-tr-[4rem] border-[6px] border-base-100/40 bg-[#FDF6E9] shadow-2xl lg:h-[380px]"
                 >
                   <img
-                    alt="Happy Student"
-                    className="w-auto h-[95%] object-contain transform translate-y-2"
-                    src="https://img.freepik.com/free-photo/young-student-woman-wearing-denim-jacket-eyeglasses-holding-colorful-folders-showing-thumb-up-orange-wall_141793-46713.jpg"
+                    alt="Students collaborating during a study session"
+                    className="h-full w-full object-cover"
+                    src="/images/students-collab.jpg"
                   />
                 </motion.div>
               </div>
@@ -164,9 +164,7 @@ const Hero = () => {
       </section>
 
       {/* --- Logo Section --- */}
-      <div className="mt-20 md:mt-32 px-6 md:px-12 lg:px-24">
-        <LogoSection />
-      </div>
+      <LogoSection />
     </>
   );
 };
