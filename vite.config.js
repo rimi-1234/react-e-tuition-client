@@ -15,9 +15,16 @@ export default defineConfig({
         // Long-lived vendor chunks: app deploys don't invalidate cached libraries.
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined;
-          if (/node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/.test(id)) return 'react';
+          // Recharts 3 touches React.Activity at module init. If it lives in a
+          // separate chunk from react/react-dom, React is still undefined and
+          // the app boots to a white screen: "Cannot set properties of undefined (setting 'Activity')".
+          if (
+            /node_modules[\\/](react|react-dom|react-router|scheduler|recharts|react-is)[\\/]/.test(id) ||
+            /node_modules[\\/]d3-/.test(id)
+          ) {
+            return 'react';
+          }
           if (id.includes('firebase')) return 'firebase';
-          if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) return 'charts';
           if (id.includes('@tanstack') || id.includes('axios')) return 'data';
           if (id.includes('sweetalert2')) return 'swal';
           return undefined;
