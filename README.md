@@ -1,114 +1,66 @@
-# 🎓 React E-Tuition Platform
+# Edurock Web
 
-A full-stack MERN application designed to streamline the connection between students and tutors. This platform allows students to post tuition needs, tutors to apply for jobs, and facilitates secure payment processing for tuition bookings via Stripe.
+React 19 + Vite web app for **Edurock**, a tuition marketplace for Bangladesh.
 
-### 🔗 Live Links
-
-| Component | Status | URL |
-| :--- | :--- | :--- |
-| **Frontend (Client)** | 🟢 Live | **[https://react-e-tution-session-client.vercel.app](https://react-e-tution-session-client.vercel.app/)** |
-| **Backend (Server)** | 🟢 Live | **[https://react-e-tution-session-sever.vercel.app](https://react-e-tution-session-sever.vercel.app/)** |
-
----
-
-## 🎯 Purpose
-
-The **React E-Tuition Platform** was built to solve the inefficiency of finding reliable academic tutors. In many areas, the process is manual and disorganized. This platform solves that by providing:
-
-1.  **Trust & Verification:** A centralized marketplace where verified tutors can find work.
-2.  **Secure Transactions:** Eliminates payment risks by integrating **Stripe** for secure booking fees.
-3.  **Role-Based Access:** Distinct, optimized workflows for Students (hiring), Tutors (applying), and Admins (managing).
-
----
-
-## ✨ Key Features
-
-* **🔐 Authentication:** Secure login & registration using **Firebase** (Google & Email/Password).
-* **🛡️ Role-Based Access Control (RBAC):**
-    * **Students:** Post tuition jobs, manage applications, book tutors.
-    * **Tutors:** Browse jobs, filter by subject/class, apply for positions.
-    * **Admins:** Manage users, verify tutors, oversee platform activity.
-* **💳 Secure Payments:** Integrated **Stripe Payment Gateway** (supports BDT currency) for booking confirmations.
-* **📄 Tuition Management:** Full CRUD (Create, Read, Update, Delete) capabilities for tuition posts.
-* **⚡ Real-time Data:** Powered by **TanStack Query** for efficient data fetching and caching.
-
----
-
-## 📦 Packages Used
-
-### **💻 Client-Side (Frontend)**
-* **Framework:** `react`, `react-router-dom` (Vite)
-* **Styling:** `tailwindcss`, `daisyui`
-* **State & API:** `@tanstack/react-query`, `axios`
-* **Authentication:** `firebase`
-* **Payment:** `@stripe/react-stripe-js`, `@stripe/stripe-js`
-* **UI Components:** `sweetalert2`, `react-hot-toast`, `react-icons`
-
-### **⚙️ Server-Side (Backend)**
-* **Runtime:** `node`, `express`
-* **Database:** `mongodb` (Native Driver)
-* **Authentication:** `firebase-admin`
-* **Security:** `cors`, `dotenv`, `jsonwebtoken` (JWT)
-* **Payment:** `stripe` (Backend SDK)
-* **Development:** `nodemon`
-
----
-
-## Theme
-
-The theme control is in the navbar, dashboard sidebar, login, and sign up. Light and dark are saved in the browser. If you have not chosen one, the app follows the device theme and updates when the device theme changes. Refresh and in-app navigation keep the same choice.
-
-## Modern features to choose
-
-See [MODERN_FEATURES.md](../MODERN_FEATURES.md) for features that are not built yet. Check the ones you want implemented.
-
-## Run locally
-
-### Backend
+**Stack:** React 19 · React Router 7 · TanStack Query 5 · Tailwind CSS 4 + daisyUI 5 (theme tokens) · Firebase Auth · Recharts · Headless UI · a **custom motion engine** (no animation libraries).
 
 ```bash
-cd backend
+cp .env.example .env    # VITE_API_URL, VITE_IMAGE_HOST_KEY
 npm install
+npm run dev             # http://localhost:5173
+npm run build && npm run preview
+npm run lint
 ```
 
-Copy `backend/.env.example` to `backend/.env` and fill in MongoDB, Stripe, Firebase Admin, and `CLIENT_URL`. Then:
+## Structure
 
-```bash
-npm run dev
+```
+src/
+├── lib/motion/       Animation engine: ticker, easing, spring, animate, timeline, smoothScroll, scroll observers
+├── motion/           React bindings: <Reveal>, <Stagger>, <TextReveal>, <Presence>, <Parallax>, <Magnetic>, <Tilt>, <CountUp>, <Marquee>…
+├── api/              Axios client (token + envelope + errors) and endpoint/query-key registry
+├── hooks/            React Query hooks (useApi), URL-synced filters, chart colours, document title
+├── providers/        Auth (Firebase + profile sync), Theme (light/dark/system)
+├── components/
+│   ├── ui/           Design system: Button, Field inputs, Card, Badge, Avatar, Modal, DataTable, StatCard, skeletons…
+│   ├── layout/       Navbar, Footer, Auth layout, notifications, user menu
+│   ├── home/ tuition/ tutor/ dashboard/ charts/
+├── layouts/          Main and dashboard shells
+├── pages/            public/, auth/, dashboard/{common,student,tutor,admin}
+├── routes/           Router (every page lazy-loaded), guards, skeleton fallbacks
+└── styles/index.css  Design tokens (Midnight Scholar theme) and utilities
 ```
 
-### Frontend
+## Design system — "Midnight Scholar"
 
-```bash
-cd frontend
-npm install
-```
+- **Type:** Fraunces (serif display) for headings, Inter for UI text.
+- **Colour:** deep ink and warm paper, a refined indigo primary and an amber accent. Light and dark themes are defined once as daisyUI tokens, so every component uses semantic classes (`bg-base-100`, `text-primary`, `text-muted`…) and switches themes automatically.
+- **Utilities:** `container-page`, `text-muted` / `text-subtle`, `border-soft`, `bg-soft`, `glass`, `grain`, `bg-dots`, `text-gradient`, `skeleton-shimmer`, `spotlight`.
+- **Reusable patterns:** every data view has a skeleton, an error state with retry, and an empty state with a next step. `DataTable` renders a table on desktop and cards on phones from the same column config.
 
-Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL` to the API origin, for example `http://localhost:3000`. Then:
+## Motion engine (replaces framer-motion, GSAP and Lenis)
 
-```bash
-npm run dev
-```
+| Piece | Like | API |
+| --- | --- | --- |
+| `ticker` | GSAP ticker | One shared `requestAnimationFrame` loop that only runs while something is animating |
+| `animate()` | framer `animate` / GSAP `to` | `animate(el, { opacity: [0, 1], y: [24, 0] }, { duration, ease, stagger, spring })`. Animates transform parts independently and interrupts cleanly |
+| `createSpring` | framer springs | Frame-rate-independent damped spring (1 ms sub-steps) |
+| `timeline()` | GSAP timeline | `.to(target, props, opts, '-=0.3').play() / reverse() / seek() / progress()` |
+| `SmoothScroll` | Lenis | Damped wheel scrolling over native scroll (sticky, anchors and keyboard all keep working). Turned off on touch devices and with reduced motion |
+| `observeInView` / `observeProgress` | ScrollTrigger | Shared IntersectionObservers, plus scroll-linked 0→1 progress with `start` / `end` |
+| `<Presence>` | AnimatePresence | Enter/exit animations for mounting and unmounting |
 
-## Deploy
+Every component reads `prefers-reduced-motion` and jumps straight to the final state when it is set. Motion never delays content.
 
-### Frontend on Vercel
+## Performance
 
-1. Import this repository in Vercel.
-2. Set the root directory to `frontend`.
-3. Framework preset: Vite. Build command: `npm run build`. Output directory: `dist`.
-4. Add `VITE_API_URL` (your Render or Vercel API origin) and `VITE_IMAGE_HOST_KEY`.
-5. `frontend/vercel.json` rewrites client routes to the app so refresh works on `/tutors`, `/dashboard`, and other paths.
+- Route-level code splitting (every page is its own chunk), long-lived vendor chunks (`react`, `firebase`, `charts`, `data`), and SweetAlert loaded on demand.
+- React Query caching (60 s fresh, 10 min in memory), `keepPreviousData` for pagination, and prefetch on hover for tuition and tutor pages.
+- Optimistic UI for bookmarks and notification read state.
+- Lazy images with a fade-in and a fallback, a high-priority hero image, preconnect + `display=swap` fonts, and an inline theme script (no colour flash).
+- Filters live in the URL: shareable, survive refresh, and work with back/forward. Search is debounced.
+- Immutable caching headers for hashed assets (`vercel.json`).
 
-### API on Render
+## Deploying (Vercel)
 
-1. Create a Web Service with root directory `backend`.
-2. Build command: `npm install`. Start command: `npm start`.
-3. Health check path: `/health`.
-4. Set `MONGO_USER`, `MONGO_PASS`, `STRIPE_SECRET_KEY`, `FB_SERVICE_KEY`, and `CLIENT_URL` (the Vercel site URL).
-
-`render.yaml` in the repository root is the same service as a Blueprint.
-
-### API on Vercel
-
-Create a second Vercel project with root directory `backend`. `backend/vercel.json` routes requests to the Express app. Set the same environment variables as Render, and allow MongoDB Atlas connections from anywhere (`0.0.0.0/0`) because Vercel does not use a fixed IP. Set `CLIENT_URL` to the frontend origin so Stripe return URLs and CORS match that site.
+Import the repo, set the root directory to `frontend` (Vite preset), and add `VITE_API_URL` (your Render API URL) and `VITE_IMAGE_HOST_KEY`. Add the Vercel domain to the API's `CLIENT_URL` / `CORS_ORIGINS`.

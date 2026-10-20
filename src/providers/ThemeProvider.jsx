@@ -1,74 +1,62 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export const THEME_STORAGE_KEY = 'edurock-theme';
-
 const ThemeContext = createContext(null);
 
-export function getSystemTheme() {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+const systemTheme = () => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-export function readThemePreference() {
+function readPreference() {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
   } catch {
-    /* Storage can be blocked in private browsing. */
+    /* storage blocked (private mode) */
   }
   return 'system';
 }
 
-function applyResolvedTheme(theme) {
-  const root = document.documentElement;
-  root.setAttribute('data-theme', theme);
-  root.style.colorScheme = theme;
-}
-
 export function ThemeProvider({ children }) {
-  const [preference, setPreferenceState] = useState(readThemePreference);
-  const [systemTheme, setSystemTheme] = useState(getSystemTheme);
-
-  const resolved = preference === 'system' ? systemTheme : preference;
+  const [preference, setPreference] = useState(readPreference);
+  const [system, setSystem] = useState(systemTheme);
+  const resolved = preference === 'system' ? system : preference;
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => setSystemTheme(media.matches ? 'dark' : 'light');
+    const onChange = () => setSystem(media.matches ? 'dark' : 'light');
     media.addEventListener('change', onChange);
     return () => media.removeEventListener('change', onChange);
   }, []);
 
   useEffect(() => {
-    applyResolvedTheme(resolved);
+    const root = document.documentElement;
+    // Briefly disable transitions so the whole UI swaps colours in one frame.
+    root.classList.add('theme-switching');
+    root.setAttribute('data-theme', resolved);
+    root.style.colorScheme = resolved;
+    const id = requestAnimationFrame(() => root.classList.remove('theme-switching'));
     try {
       localStorage.setItem(THEME_STORAGE_KEY, preference);
     } catch {
-      /* Ignore storage failures and keep the in-memory choice. */
+      /* ignore */
     }
+    return () => cancelAnimationFrame(id);
   }, [preference, resolved]);
 
-  const setPreference = (next) => {
-    if (next === 'light' || next === 'dark' || next === 'system') {
-      setPreferenceState(next);
-    }
-  };
-
-  const toggleTheme = () => {
-    setPreferenceState(resolved === 'dark' ? 'light' : 'dark');
-  };
-
   const value = useMemo(
-    () => ({ preference, resolved, setPreference, toggleTheme }),
-    [preference, resolved]
+    () => ({
+      preference,
+      resolved,
+      setPreference,
+      toggleTheme: () => setPreference(resolved === 'dark' ? 'light' : 'dark'),
+    }),
+    [preference, resolved],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
-  }
-  return context;
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
+  return ctx;
 }

@@ -1,230 +1,265 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { FaTrashAlt, FaClock, FaCheckCircle, FaTimesCircle, FaEdit, FaMapMarkerAlt } from 'react-icons/fa';
-import Swal from 'sweetalert2';
-import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import { Link } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { ArrowUpRight, ListChecks, PencilLine, Search, Undo2 } from 'lucide-react';
+import {
+  Button,
+  DataTable,
+  EmptyState,
+  ErrorState,
+  Input,
+  Modal,
+  PageHeader,
+  StatusBadge,
+  TableSkeleton,
+  Tabs,
+  Textarea,
+  confirmAction,
+} from '../../../components/ui';
+import { useApplications, useUpdateApplication, useWithdrawApplication } from '../../../hooks/useApi';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { date, money } from '../../../utils/format';
 
-const MyApplications = () => {
-    const { user, loading } = useAuth();
-    const axiosSecure = useAxiosSecure();
-    const [editingApp, setEditingApp] = useState(null);
+const TABS = [
+  { value: 'all', label: 'All' },
+  { value: 'Pending', label: 'Pending' },
+  { value: 'Approved', label: 'Hired' },
+  { value: 'Rejected', label: 'Not selected' },
+];
+const LABELS = { Approved: 'Hired', Rejected: 'Not selected' };
 
-    const { data: applications = [], refetch, isLoading } = useQuery({
-        queryKey: ['my-applications', user?.email],
-        enabled: !loading && !!user?.email,
-        queryFn: async () => {
-            // Ensure this matches your backend route exactly
-            const res = await axiosSecure.get(`/applications/my-applications?email=${user.email}`);
-            return res.data;
-        }
-    });
-
-    if (loading || isLoading) {
-        return <div className="h-screen flex justify-center items-center"><span className="loading loading-spinner text-primary loading-lg"></span></div>;
-    }
-
-    // --- Helper for Status Badge Color ---
-    const getStatusStyles = (status) => {
-        switch (status.toLowerCase()) {
-            case 'approved':
-                return 'badge-success text-white border-green-600 bg-green-500';
-            case 'rejected':
-                return 'badge-error text-white border-red-600 bg-red-500';
-            default: // pending
-                return 'badge-warning text-white border-yellow-600 bg-yellow-500';
-        }
-    };
-
-    // --- Handle Delete (Withdraw) ---
-    const handleDelete = (id) => {
-        Swal.fire({
-            title: 'Withdraw Application?',
-            text: "Are you sure you want to cancel this application?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, Withdraw'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const res = await axiosSecure.delete(`/applications/${id}`);
-                    if (res.data.deletedCount > 0) {
-                        refetch(); // Reload the table
-                        Swal.fire('Withdrawn!', 'Your application has been removed.', 'success');
-                    }
-                } catch (error) {
-                    Swal.fire('Error', 'Failed to withdraw application', 'error');
-                }
-            }
-        });
-    };
-
-    // --- Handle Update (Submit Salary Edit) ---
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const newSalary = form.salary.value;
-
-        try {
-            const res = await axiosSecure.patch(`/applications/${editingApp._id}`, {
-                expectedSalary: newSalary
-            });
-
-            if (res.data.modifiedCount > 0) {
-                refetch(); // Reload the table
-                setEditingApp(null); // Close modal
-                Swal.fire('Updated!', 'Salary expectation updated successfully.', 'success');
-            }
-        } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Failed to update application', 'error');
-        }
-    };
-
-    return (
-        <div className="w-full p-2 md:p-6 bg-base-200 min-h-screen font-body">
-            <h2 className="text-3xl font-bold font-display text-center md:text-left text-base-content mb-8">
-                My Applications <span className="text-primary">({applications.length})</span>
-            </h2>
-
-            <div className="overflow-x-auto bg-base-100 rounded-xl shadow-lg border border-base-200">
-                <table className="table w-full">
-                    {/* Table Head */}
-                    <thead className="bg-primary/10 text-base-content font-display text-sm uppercase">
-                        <tr>
-                            <th>Tuition Info</th>
-                            <th>Expected Salary</th>
-                            <th>Status</th>
-                            <th className="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    {/* Table Body */}
-                    <tbody>
-                        {applications.length === 0 ? (
-                            <tr>
-                                <td colSpan="4" className="text-center py-8 text-gray-500">
-                                    You haven't applied to any tuitions yet.
-                                </td>
-                            </tr>
-                        ) : (
-                            applications.map((app) => (
-                                <tr key={app._id} className="hover:bg-base-200/50 transition-colors">
-                                    {/* Column 1: Job Info */}
-                                    <td>
-                                        <div className="flex flex-col gap-1">
-                                            <div className="font-bold text-lg text-primary">
-                                                {app.tuitionSubject || "Unknown Subject"}
-                                            </div>
-                                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                                                <FaMapMarkerAlt />
-                                                {app.tuitionLocation || "Unknown Location"}
-                                            </div>
-                                            <div className="text-xs text-gray-400 mt-1">
-                                                Applied: {app.appliedDate ? new Date(app.appliedDate).toLocaleDateString() : 'N/A'}
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    {/* Column 2: Salary */}
-                                    <td className="font-bold text-base-content/70">
-                                        ৳{app.expectedSalary}
-                                    </td>
-
-                                    {/* Column 3: Status with Dynamic Colors */}
-                                    <td>
-                                        <div className={`badge p-3 font-semibold gap-2 ${getStatusStyles(app.status)}`}>
-                                            {app.status === 'Approved' && <FaCheckCircle />}
-                                            {app.status === 'Rejected' && <FaTimesCircle />}
-                                            {app.status === 'Pending' && <FaClock />}
-                                            {app.status}
-                                        </div>
-                                    </td>
-
-                                    {/* Column 4: Actions */}
-                                    <td className="text-center">
-                                        {app.status === 'Pending' ? (
-                                            <div className="flex justify-center gap-3">
-                                                {/* Edit Button */}
-                                                <button
-                                                    onClick={() => setEditingApp(app)}
-                                                    className="btn btn-sm btn-circle btn-ghost text-blue-600 hover:bg-blue-100 tooltip tooltip-left"
-                                                    data-tip="Edit Salary"
-                                                >
-                                                    <FaEdit size={16} />
-                                                </button>
-
-                                                {/* Delete Button */}
-                                                <button
-                                                    onClick={() => handleDelete(app._id)}
-                                                    className="btn btn-sm btn-circle btn-ghost text-red-600 hover:bg-red-100 tooltip tooltip-left"
-                                                    data-tip="Withdraw Application"
-                                                >
-                                                    <FaTrashAlt size={16} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <span className="text-xs font-bold text-gray-400 opacity-50 uppercase tracking-widest">
-                                                Locked
-                                            </span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* --- EDIT MODAL --- */}
-            {editingApp && (
-                <dialog open className="modal modal-open bg-black/50 backdrop-blur-sm">
-                    <div className="modal-box">
-                        <button 
-                            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                            onClick={() => setEditingApp(null)}
-                        >✕</button>
-                        
-                        <h3 className="font-bold text-xl mb-2 text-primary">Update Salary</h3>
-                        <p className="text-sm text-gray-500 mb-6">
-                            Change your expected salary for: <br/>
-                            <span className="font-semibold text-gray-700">{editingApp.tuitionSubject}</span>
-                        </p>
-
-                        <form onSubmit={handleUpdate}>
-                            <div className="form-control w-full mb-6">
-                                <label className="label">
-                                    <span className="label-text font-semibold">Expected Salary (BDT)</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    name="salary"
-                                    defaultValue={editingApp.expectedSalary}
-                                    className="input input-bordered w-full focus:outline-none focus:border-primary"
-                                    required
-                                    min="0"
-                                />
-                            </div>
-
-                            <div className="modal-action">
-                                <button
-                                    type="button"
-                                    className="btn btn-ghost"
-                                    onClick={() => setEditingApp(null)}
-                                >
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn btn-primary px-8">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </dialog>
-            )}
-        </div>
-    );
+const EMPTY_COPY = {
+  all: ['No applications yet', 'Find a tuition that fits your subjects and send your first application. It takes about a minute.'],
+  Pending: ['Nothing waiting on a decision', 'Applications you send appear here until the student decides.'],
+  Approved: ['No hires yet', 'When a student hires and pays you, the tuition shows up here and in Ongoing tuitions.'],
+  Rejected: ['Nothing here', 'Applications that weren’t selected will be listed here.'],
 };
 
-export default MyApplications;
+/** Tuition info from the populated doc, falling back to the snapshot on the application. */
+const tuitionOf = (a) => ({
+  id: a.tuition?.id || (typeof a.tuition === 'string' ? a.tuition : null),
+  title: a.tuition?.title || a.tuitionTitle || 'Tuition',
+  subject: a.tuition?.subject || a.tuitionSubject,
+  location: a.tuition?.location || a.tuitionLocation,
+  classLevel: a.tuition?.classLevel,
+  budget: a.tuition?.budget,
+});
+
+function EditApplicationModal({ application, onClose }) {
+  const update = useUpdateApplication({ success: 'Application updated', onSuccess: onClose });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm({
+    defaultValues: {
+      expectedSalary: application.expectedSalary,
+      qualifications: application.qualifications || '',
+      experience: application.experience ?? 0,
+      message: application.message || '',
+    },
+  });
+
+  const onSubmit = (values) =>
+    update.mutate({
+      id: application.id,
+      expectedSalary: Number(values.expectedSalary),
+      experience: Number(values.experience),
+      qualifications: values.qualifications.trim(),
+      message: values.message.trim(),
+    });
+
+  const t = tuitionOf(application);
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      title="Edit application"
+      description={`For “${t.title}”${t.budget ? ` · budget ${money(t.budget)}/mo` : ''}`}
+      footer={
+        <>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" form="edit-application" loading={update.isPending} disabled={!isDirty}>
+            Save changes
+          </Button>
+        </>
+      }
+    >
+      <form id="edit-application" onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            label="Your monthly rate (৳)"
+            type="number"
+            inputMode="numeric"
+            min={500}
+            required
+            error={errors.expectedSalary?.message}
+            {...register('expectedSalary', {
+              required: 'Enter your expected monthly fee',
+              min: { value: 500, message: 'At least ৳500' },
+              validate: (v) => Number.isFinite(Number(v)) || 'Enter a number',
+            })}
+          />
+          <Input
+            label="Teaching experience (years)"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={60}
+            required
+            error={errors.experience?.message}
+            {...register('experience', {
+              required: 'Required',
+              min: { value: 0, message: 'Can’t be negative' },
+              max: { value: 60, message: 'That seems too high' },
+              validate: (v) => Number.isInteger(Number(v)) || 'Whole years only',
+            })}
+          />
+        </div>
+        <Input
+          label="Qualifications"
+          placeholder="e.g. BSc in Physics, BUET"
+          required
+          error={errors.qualifications?.message}
+          {...register('qualifications', {
+            required: 'Tell the student about your qualifications',
+            validate: (v) => v.trim().length >= 3 || 'At least 3 characters',
+            maxLength: { value: 300, message: 'Keep it under 300 characters' },
+          })}
+        />
+        <Textarea
+          label="Message to the student"
+          rows={4}
+          hint="Optional. A short note on how you would approach the lessons."
+          error={errors.message?.message}
+          {...register('message', { maxLength: { value: 1000, message: 'Keep it under 1000 characters' } })}
+        />
+      </form>
+    </Modal>
+  );
+}
+
+export default function MyApplications() {
+  useDocumentTitle('My applications');
+  const [status, setStatus] = useState('all');
+  const [editing, setEditing] = useState(null);
+  const { data, isPending, error, refetch } = useApplications('mine', { status });
+  const withdraw = useWithdrawApplication({ success: 'Application withdrawn' });
+  const items = data?.items || [];
+
+  const onWithdraw = async (a) => {
+    const ok = await confirmAction({
+      title: 'Withdraw this application?',
+      text: `The student will no longer see your application for “${tuitionOf(a).title}”. You can apply again while the tuition is open.`,
+      confirmText: 'Withdraw',
+      danger: true,
+    });
+    if (ok) withdraw.mutate(a.id);
+  };
+
+  const columns = [
+    {
+      key: 'tuition',
+      header: 'Tuition',
+      primary: true,
+      render: (a) => {
+        const t = tuitionOf(a);
+        return (
+          <div className="min-w-0 max-w-sm">
+            {t.id ? (
+              <Link to={`/tuitions/${t.id}`} className="line-clamp-1 font-semibold hover:text-primary">
+                {t.title}
+              </Link>
+            ) : (
+              <p className="line-clamp-1 font-semibold">{t.title}</p>
+            )}
+            <p className="mt-0.5 text-xs text-subtle">{[t.subject, t.classLevel, t.location].filter(Boolean).join(' · ')}</p>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'rate',
+      header: 'Your rate',
+      render: (a) => (
+        <span className="font-medium tabular-nums">
+          {money(a.expectedSalary)}
+          <span className="text-xs font-normal text-subtle">/mo</span>
+        </span>
+      ),
+    },
+    {
+      key: 'budget',
+      header: 'Budget',
+      render: (a) => {
+        const budget = tuitionOf(a).budget;
+        return budget ? <span className="tabular-nums text-muted">{money(budget)}</span> : <span className="text-subtle">—</span>;
+      },
+    },
+    { key: 'status', header: 'Status', render: (a) => <StatusBadge status={a.status} labels={LABELS} /> },
+    { key: 'createdAt', header: 'Applied', render: (a) => <span className="text-muted">{date(a.createdAt)}</span> },
+    {
+      key: 'actions',
+      header: <span className="sr-only">Actions</span>,
+      className: 'text-right',
+      fullWidthOnMobile: true,
+      render: (a) => {
+        if (a.status === 'Pending') {
+          const busy = withdraw.isPending && withdraw.variables === a.id;
+          return (
+            <div className="flex justify-end gap-1.5 max-md:justify-start">
+              <Button size="xs" variant="outline" leftIcon={PencilLine} onClick={() => setEditing(a)} aria-label={`Edit application for ${tuitionOf(a).title}`}>
+                Edit
+              </Button>
+              <Button size="xs" variant="danger-soft" leftIcon={Undo2} loading={busy} onClick={() => onWithdraw(a)} aria-label={`Withdraw application for ${tuitionOf(a).title}`}>
+                Withdraw
+              </Button>
+            </div>
+          );
+        }
+        if (a.status === 'Approved') {
+          return (
+            <div className="flex justify-end max-md:justify-start">
+              <Button size="xs" variant="success" rightIcon={ArrowUpRight} to="/dashboard/ongoing-tuitions">
+                Open
+              </Button>
+            </div>
+          );
+        }
+        return <span className="text-xs text-subtle">{a.decidedAt ? `Decided ${date(a.decidedAt)}` : '—'}</span>;
+      },
+    },
+  ];
+
+  const [emptyTitle, emptyText] = EMPTY_COPY[status] || EMPTY_COPY.all;
+
+  return (
+    <>
+      <PageHeader
+        title="My applications"
+        description="Track every tuition you’ve applied to. You can edit or withdraw while a decision is pending."
+        actions={
+          <Button to="/tuitions" leftIcon={Search}>
+            Browse tuitions
+          </Button>
+        }
+      />
+      <Tabs tabs={TABS} value={status} onChange={setStatus} className="mb-6" />
+
+      {error ? (
+        <ErrorState error={error} onRetry={refetch} />
+      ) : isPending ? (
+        <TableSkeleton />
+      ) : items.length === 0 ? (
+        <EmptyState icon={ListChecks} title={emptyTitle} description={emptyText} action={<Button to="/tuitions">Browse tuitions</Button>} />
+      ) : (
+        <DataTable columns={columns} rows={items} caption="Your tuition applications" />
+      )}
+
+      {editing && <EditApplicationModal key={editing.id} application={editing} onClose={() => setEditing(null)} />}
+    </>
+  );
+}

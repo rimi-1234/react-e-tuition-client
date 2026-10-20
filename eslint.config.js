@@ -23,7 +23,15 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // No eslint-plugin-react here, so JSX usage (<Icon />) is invisible to this rule:
+      // PascalCase names are treated as components and ignored.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^[A-Z_]', ignoreRestSiblings: true }],
     },
+  },
+  {
+    // Providers, motion bindings, the router and a few UI modules intentionally export
+    // hooks/helpers next to components. This rule only affects dev hot-reload granularity.
+    files: ['src/providers/**', 'src/motion/**', 'src/routes/**', 'src/components/ui/feedback.jsx', 'src/components/tuition/**'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
 ])

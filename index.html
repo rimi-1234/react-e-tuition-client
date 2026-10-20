@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <script>
+      // Apply the saved theme before first paint (no light/dark flash).
       (function () {
         try {
           var stored = localStorage.getItem('edurock-theme');
@@ -19,13 +20,29 @@
         }
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Edurock connects students with verified tutors for tuition across Bangladesh." />
-    <title>Edurock | Find a Tutor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Edurock — Find a verified tutor in Bangladesh</title>
+    <meta name="description" content="Edurock connects students and parents with verified tutors across Bangladesh. Post a tuition for free, compare applicants, and hire with secure payments." />
+    <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Edurock — Find a verified tutor" />
+    <meta property="og:description" content="Post a tuition for free, compare verified tutors and hire with secure payments." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo-square.png" />
+
+    <!-- Fonts: preconnect + display=swap so text renders immediately -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,50;1,9..144,400..700,50&family=Inter:wght@400..700&display=swap"
+    />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>Edurock needs JavaScript enabled to run.</noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,48 +1,29 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-
-import { router } from './routes/Routes.jsx'
-import { RouterProvider } from 'react-router'
-
-import AuthProvider from './providers/AuthProvider.jsx'
-import { ThemeProvider, useTheme } from './providers/ThemeProvider.jsx'
-import { Toaster } from 'react-hot-toast'
-
-// React Query
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-// Create a single QueryClient instance
-const queryClient = new QueryClient()
-
-function AppToaster() {
-  const { resolved } = useTheme()
-  const isDark = resolved === 'dark'
-
-  return (
-    <Toaster
-      position="top-right"
-      reverseOrder={false}
-      toastOptions={{
-        style: {
-          background: isDark ? '#16163a' : '#ffffff',
-          color: isDark ? '#f3f4f6' : '#1f2937',
-          border: isDark ? '1px solid #2e2e58' : '1px solid #e5e7eb',
-        },
-      }}
-    />
-  )
-}
+import { StrictMode, Suspense } from 'react';
+import { createRoot } from 'react-dom/client';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider } from 'react-router';
+import './styles/index.css';
+import { AppToaster } from './components/ui/feedback';
+import { queryClient } from './lib/queryClient';
+import { MotionProvider } from './motion';
+import { AuthProvider } from './providers/AuthProvider';
+import { ThemeProvider } from './providers/ThemeProvider';
+import { AppSplash } from './routes/fallbacks';
+import { router } from './routes/router';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          <AppToaster />
-        </AuthProvider>
+        <MotionProvider>
+          <AuthProvider>
+            <Suspense fallback={<AppSplash />}>
+              <RouterProvider router={router} />
+            </Suspense>
+            <AppToaster />
+          </AuthProvider>
+        </MotionProvider>
       </ThemeProvider>
     </QueryClientProvider>
-  </StrictMode>
-)
+  </StrictMode>,
+);

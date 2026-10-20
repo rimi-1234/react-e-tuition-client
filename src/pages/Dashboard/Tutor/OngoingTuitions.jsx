@@ -1,86 +1,161 @@
-import { useQuery } from '@tanstack/react-query'
-import { FaMapMarkerAlt, FaUserGraduate, FaMoneyBillWave } from 'react-icons/fa'
-import useAuth from '../../../hooks/useAuth'
-import useAxiosSecure from '../../../hooks/useAxiosSecure'
+import { Link } from 'react-router';
+import { BookOpenCheck, CalendarClock, CalendarDays, GraduationCap, Mail, MapPin, MonitorSmartphone, Phone, Search } from 'lucide-react';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  LoadingRegion,
+  PageHeader,
+  TuitionCardSkeleton,
+} from '../../../components/ui';
+import { Stagger } from '../../../motion';
+import { useApplications } from '../../../hooks/useApi';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { date, money, plural } from '../../../utils/format';
 
-const OngoingTuitions = () => {
-  const { user } = useAuth()
-  const axiosSecure = useAxiosSecure()
-
-  const { data: ongoing = [], isLoading } = useQuery({
-    queryKey: ['ongoing-tuitions', user?.email],
-    queryFn: async () => {
-      // CORRECTION: We call the specific endpoint we just created
-      // No need to pass 'status=approved' manually anymore
-      const res = await axiosSecure.get(`/applications/ongoing?tutorEmail=${user.email}`)
-      return res.data
-    },
-    // Only run this query if the user email exists
-    enabled: !!user?.email
-  })
-
-  if (isLoading) return (
-    <div className="h-screen flex justify-center items-center bg-base-200">
-      <span className="loading loading-spinner text-primary loading-lg"></span>
-    </div>
-  )
-
+function Detail({ icon: Icon, children }) {
+  if (!children) return null;
   return (
-    <div className="w-full p-8 bg-base-200 min-h-screen font-body">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold font-display text-base-content mb-6">
-          Ongoing <span className="text-primary">Tuitions</span>
-        </h2>
-
-        {ongoing.length === 0 ? (
-          <div className="alert alert-info bg-blue-50 border-blue-200 text-blue-800">
-            <span>No active tuitions found. Once a student pays, it will appear here.</span>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ongoing.map(item => (
-              <div key={item._id} className="card bg-base-100 shadow-xl border-l-4 border-success">
-                <div className="card-body">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="badge badge-success text-white">Active</span>
-                    <span className="text-xs text-gray-400 font-mono">#{item.transactionId?.slice(-6) || 'N/A'}</span>
-                  </div>
-
-                  <h3 className="card-title text-xl font-bold">{item.tuitionSubject}</h3>
-                  
-                  <div className="space-y-3 mt-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-3">
-                      <FaUserGraduate className="text-primary" />
-                      <div>
-                        <p className="text-xs text-gray-400">Student Email</p>
-                        <p className="font-semibold">{item.recruiterEmail}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <FaMapMarkerAlt className="text-secondary" />
-                      <div>
-                        <p className="text-xs text-gray-400">Location</p>
-                        <p className="font-semibold">{item.tuitionLocation}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <FaMoneyBillWave className="text-accent" />
-                      <div>
-                        <p className="text-xs text-gray-400">Salary</p>
-                        <p className="font-bold text-lg text-primary">৳{item.expectedSalary}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+    <li className="flex min-w-0 items-center gap-2 text-sm text-muted">
+      <Icon className="size-4 shrink-0 text-subtle" aria-hidden />
+      <span className="truncate">{children}</span>
+    </li>
+  );
 }
 
-export default OngoingTuitions
+function OngoingCard({ application: a }) {
+  const t = a.tuition || {};
+  const s = a.student || {};
+  const tuitionId = t.id || (typeof a.tuition === 'string' ? a.tuition : null);
+  const title = t.title || a.tuitionTitle || 'Tuition';
+  const email = s.email || a.studentEmail;
+  const studentName = s.displayName || 'Student';
+
+  return (
+    <Card interactive className="flex h-full flex-col">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Badge tone="primary">{t.subject || a.tuitionSubject || 'Tuition'}</Badge>
+        <Badge tone="success" dot>
+          Ongoing
+        </Badge>
+      </div>
+
+      <h2 className="mt-4 font-sans text-lg font-semibold leading-snug">
+        {tuitionId ? (
+          <Link to={`/tuitions/${tuitionId}`} className="hover:text-primary">
+            {title}
+          </Link>
+        ) : (
+          title
+        )}
+      </h2>
+
+      <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        <Detail icon={GraduationCap}>{t.classLevel}</Detail>
+        <Detail icon={MonitorSmartphone}>{t.teachingMode}</Detail>
+        <Detail icon={CalendarClock}>{t.schedule}</Detail>
+        <Detail icon={MapPin}>{t.location || a.tuitionLocation}</Detail>
+      </ul>
+
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-soft pt-5">
+        <div>
+          <p className="text-xs text-subtle">Agreed monthly fee</p>
+          <p className="mt-1 font-display text-2xl font-semibold tabular-nums">{money(a.expectedSalary)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-subtle">Started</p>
+          <p className="mt-1 flex items-center gap-1.5 text-sm font-medium">
+            <CalendarDays className="size-4 text-subtle" aria-hidden />
+            {date(a.decidedAt || a.updatedAt)}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-1 flex-col justify-end">
+        <div className="rounded-2xl bg-soft p-4">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-subtle">Student</p>
+          <div className="flex items-center gap-3">
+            <Avatar src={s.photoURL} name={studentName} size="md" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold">{studentName}</p>
+              {s.location ? (
+                <p className="flex items-center gap-1 truncate text-xs text-subtle">
+                  <MapPin className="size-3 shrink-0" aria-hidden />
+                  {s.location}
+                </p>
+              ) : (
+                email && <p className="truncate text-xs text-subtle">{email}</p>
+              )}
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {email && (
+              <Button size="sm" variant="outline" leftIcon={Mail} href={`mailto:${email}?subject=${encodeURIComponent(`Edurock: ${title}`)}`} aria-label={`Email ${studentName}`} className="flex-1">
+                Email
+              </Button>
+            )}
+            {s.phone ? (
+              <Button size="sm" variant="outline" leftIcon={Phone} href={`tel:${s.phone.replace(/[^\d+]/g, '')}`} aria-label={`Call ${studentName} on ${s.phone}`} className="flex-1">
+                Call
+              </Button>
+            ) : (
+              <span className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-soft px-3 text-xs text-subtle">No phone shared</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+export default function OngoingTuitions() {
+  useDocumentTitle('Ongoing tuitions');
+  const { data, isPending, error, refetch } = useApplications('ongoing');
+  const items = data?.items || [];
+
+  return (
+    <>
+      <PageHeader
+        title="Ongoing tuitions"
+        description={
+          items.length
+            ? `You’re currently teaching ${plural(items.length, 'student')}. Contact details are shared once a student hires you.`
+            : 'Tuitions you’ve been hired for, with your student’s contact details.'
+        }
+        actions={
+          <Button to="/tuitions" variant="outline" leftIcon={Search}>
+            Find more tuitions
+          </Button>
+        }
+      />
+
+      {error ? (
+        <ErrorState error={error} onRetry={refetch} />
+      ) : isPending ? (
+        <LoadingRegion label="Loading ongoing tuitions" className="grid gap-5 md:grid-cols-2">
+          {Array.from({ length: 4 }, (_, i) => (
+            <TuitionCardSkeleton key={i} />
+          ))}
+        </LoadingRegion>
+      ) : items.length === 0 ? (
+        <EmptyState
+          icon={BookOpenCheck}
+          title="No ongoing tuitions yet"
+          description="When a student hires you and completes payment, the tuition and their contact details appear here."
+          action={<Button to="/tuitions">Browse tuitions</Button>}
+        />
+      ) : (
+        <Stagger className="grid gap-5 md:grid-cols-2">
+          {items.map((a) => (
+            <div key={a.id} className="min-w-0">
+              <OngoingCard application={a} />
+            </div>
+          ))}
+        </Stagger>
+      )}
+    </>
+  );
+}

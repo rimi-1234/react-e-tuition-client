@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+/* Theme follows the app switch (data-theme on <html>), not only the OS. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* ─────────────────────────────────────────────────────────────────────
+   Midnight Scholar — design tokens
+   Semantic colours come from the daisyUI themes below, so every
+   component uses bg-base-100 / text-base-content / primary / accent …
+   and light/dark switch automatically.
+   ──────────────────────────────────────────────────────────────────── */
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --shadow-soft: 0 1px 2px rgb(16 20 45 / 0.04), 0 8px 24px -12px rgb(16 20 45 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(16 20 45 / 0.04), 0 24px 48px -20px rgb(16 20 45 / 0.25);
+  --shadow-glow: 0 10px 40px -10px color-mix(in oklab, var(--color-primary) 55%, transparent);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-float: float 7s var(--ease-in-out-soft) infinite;
+
+  @keyframes shimmer {
+    to { background-position: -200% 0; }
+  }
+  @keyframes float {
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -12px; }
+  }
+}
+
+@keyframes dial-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.92); }
+}
+
+/* Plain keyframes (not in @theme) so they ship even without an --animate-* token. */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes marquee {
+  to { transform: translate3d(-100%, 0, 0); }
+}
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #fafaf7;
+  --color-base-300: #ebeae3;
+  --color-base-content: #12152b;
+  --color-primary: #5b5bf0;
+  --color-primary-content: #ffffff;
+  --color-secondary: #0f9f94;
+  --color-secondary-content: #ffffff;
+  --color-accent: #f5a524;
+  --color-accent-content: #241400;
+  --color-neutral: #12152b;
+  --color-neutral-content: #f4f4fb;
+  --color-info: #2563eb;
+  --color-info-content: #ffffff;
+  --color-success: #0f9f6e;
+  --color-success-content: #ffffff;
+  --color-warning: #c97a06;
+  --color-warning-content: #ffffff;
+  --color-error: #e11d48;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.625rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  color-scheme: dark;
+  --color-base-100: #121830;
+  --color-base-200: #0b1020;
+  --color-base-300: #232b48;
+  --color-base-content: #e8eaf5;
+  --color-primary: #8080ff;
+  --color-primary-content: #0b1020;
+  --color-secondary: #2dd4bf;
+  --color-secondary-content: #04201d;
+  --color-accent: #f7b544;
+  --color-accent-content: #241400;
+  --color-neutral: #e8eaf5;
+  --color-neutral-content: #0b1020;
+  --color-info: #60a5fa;
+  --color-info-content: #06142b;
+  --color-success: #34d399;
+  --color-success-content: #03251a;
+  --color-warning: #fbbf24;
+  --color-warning-content: #2a1a00;
+  --color-error: #fb7185;
+  --color-error-content: #2b0610;
+  --radius-selector: 0.625rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-padding-top: 5.5rem;
+  }
+  /* The JS smooth-scroller drives position itself; native smoothing would fight it. */
+  html.smooth-scroll { scroll-behavior: auto; }
+
+  body {
+    @apply bg-base-200 text-base-content font-sans min-h-dvh;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+    font-variation-settings: "SOFT" 50, "WONK" 0;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 22%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  img { -webkit-user-drag: none; }
+
+  /* Slim themed scrollbars */
+  * { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-base-content) 22%, transparent) transparent; }
+}
+
+/* ── Utilities ────────────────────────────────────────────────────── */
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) { padding-inline: 1.5rem; }
+  @media (width >= 64rem) { padding-inline: 2rem; }
+}
+
+@utility text-muted {
+  color: color-mix(in oklab, var(--color-base-content) 64%, transparent);
+}
+@utility text-subtle {
+  color: color-mix(in oklab, var(--color-base-content) 46%, transparent);
+}
+@utility border-soft {
+  border-color: color-mix(in oklab, var(--color-base-content) 9%, transparent);
+}
+@utility bg-soft {
+  background-color: color-mix(in oklab, var(--color-base-content) 4%, transparent);
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--color-primary) 10%, color-mix(in oklab, var(--color-primary) 55%, var(--color-accent)) 55%, var(--color-accent) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+}
+
+/* Translucent surface. No backdrop-filter: re-blurring moving content (parallax
+   photos) on every scroll frame was the main source of jank. */
+@utility glass {
+  background-color: color-mix(in oklab, var(--color-base-100) 94%, transparent);
+}
+
+/* Shimmering placeholder for skeleton loaders. */
+@utility skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-base-content) 6%, transparent) 0%,
+    color-mix(in oklab, var(--color-base-content) 12%, transparent) 20%,
+    color-mix(in oklab, var(--color-base-content) 6%, transparent) 40%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Cursor-following highlight; --mx/--my are written by <Tilt>. */
+@utility spotlight {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out-soft);
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--color-primary) 12%, transparent), transparent 45%);
+  }
+  &:hover::before { opacity: 1; }
+}
+
+@utility bg-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--color-base-content) 12%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Skip rendering/painting of offscreen sections until they approach the viewport. */
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
+/* Cheap decorative glow: a radial gradient instead of a filter: blur() blob. */
+@utility glow-primary {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent);
+}
+@utility glow-accent {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent);
+}
+
+/* Expanding status ring: transform + opacity only, so it never triggers repaints. */
+@utility pulse-ring {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--color-success);
+    animation: pulse-ring 2.4s var(--ease-out-soft) infinite;
+  }
+}
+
+/* One-layer readability scrim for photo banners (replaces four stacked gradient divs). */
+@utility hero-scrim {
+  background:
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-base-200) 80%, transparent), transparent 9rem),
+    linear-gradient(to top, var(--color-base-200), transparent 9rem),
+    color-mix(in oklab, var(--color-base-200) 86%, transparent);
+  @media (width >= 64rem) {
+    background:
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-base-200) 80%, transparent), transparent 9rem),
+      linear-gradient(to top, var(--color-base-200), transparent 9rem),
+      linear-gradient(to right, var(--color-base-200) 32%, color-mix(in oklab, var(--color-base-200) 80%, transparent) 56%, color-mix(in oklab, var(--color-base-200) 8%, transparent));
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* Marquee (see <Marquee>) */
+.marquee {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  gap: var(--marquee-gap, 3rem);
+  padding-right: var(--marquee-gap, 3rem);
+  justify-content: space-around;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+.marquee-reverse { animation-direction: reverse; }
+.marquee:hover .marquee-track,
+.marquee-paused .marquee-track { animation-play-state: paused; }
+
+/* Third-party widgets themed to the design system */
+.swal2-popup {
+  border-radius: var(--radius-box) !important;
+  background: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+  font-family: var(--font-sans) !important;
+  padding: 1.75rem !important;
+}
+.swal2-title { font-family: var(--font-display) !important; font-weight: 600 !important; color: var(--color-base-content) !important; }
+.swal2-html-container { color: color-mix(in oklab, var(--color-base-content) 68%, transparent) !important; }
+.swal2-actions { gap: 0.5rem; }
+.swal2-container.swal2-backdrop-show { background: rgb(11 16 32 / 0.5) !important; }
+
+.recharts-default-tooltip {
+  border-radius: 0.75rem !important;
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent) !important;
+  background: var(--color-base-100) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Applied for one frame while the theme flips so colours swap instantly. */
+.theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
